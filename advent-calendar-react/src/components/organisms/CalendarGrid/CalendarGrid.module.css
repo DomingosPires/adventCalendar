@@ -4,13 +4,13 @@
   align-content: center;
   gap: 2px;
   padding: var(--space-4) 0 var(--space-5);
-  grid-template-columns: repeat(5, minmax(48px, 64px));
-  grid-template-rows: repeat(12, minmax(48px, 64px));
+  grid-template-columns: repeat(4, minmax(70px, 84px));
+  grid-template-rows: repeat(14, minmax(56px, 76px));
 }
 
 @media (min-width: 769px) {
   .grid {
-    grid-template-columns: repeat(7, minmax(70px, 100px));
-    grid-template-rows: repeat(9, 100px);
+    grid-template-columns: repeat(7, minmax(80px, 104px));
+    grid-template-rows: repeat(8, 96px);
   }
 }
