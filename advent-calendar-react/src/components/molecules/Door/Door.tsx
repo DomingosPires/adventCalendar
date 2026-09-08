@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Badge, type BadgeVariant } from '../../atoms/Badge';
 import { DoorNumber } from '../../atoms/DoorNumber';
 import type { CalendarDay } from '../../../data/calendar';
@@ -33,11 +33,32 @@ export interface DoorProps {
 
 export function Door({ day, state, onOpen }: DoorProps) {
   const [shaking, setShaking] = useState(false);
+  const shakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const badge = BADGE_FOR_STATE[state];
+
+  const clearShakeTimeout = () => {
+    if (shakeTimeoutRef.current) {
+      clearTimeout(shakeTimeoutRef.current);
+      shakeTimeoutRef.current = undefined;
+    }
+  };
+
+  useEffect(() => clearShakeTimeout, []);
+
+  const stopShaking = () => {
+    clearShakeTimeout();
+    setShaking(false);
+  };
 
   const handleClick = () => {
     if (state === 'locked') {
-      if (!reducedMotion()) setShaking(true);
+      if (!reducedMotion()) {
+        setShaking(true);
+        clearShakeTimeout();
+        shakeTimeoutRef.current = setTimeout(() => setShaking(false), 600);
+      }
       return;
     }
     onOpen(day.day);
@@ -63,7 +84,7 @@ export function Door({ day, state, onOpen }: DoorProps) {
         .filter(Boolean)
         .join(' ')}
       onClick={handleClick}
-      onAnimationEnd={() => setShaking(false)}
+      onAnimationEnd={stopShaking}
     >
       <span className={styles.panel} aria-hidden="true" />
       <DoorNumber value={day.day} size={day.size} />

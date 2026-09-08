@@ -39,10 +39,15 @@
 .door[data-state='today'] .panel { box-shadow: var(--glow-today); }
 .door[data-state='today'] { animation: pulse 2s ease-in-out infinite; }
 
-.door:hover .panel { transform: rotateY(24deg); }
-.door:focus-visible .panel { transform: rotateY(24deg); }
+.door:not([data-state='locked']):not(.ajar):hover .panel,
+.door:not([data-state='locked']):not(.ajar):focus-visible .panel {
+  transform: rotateY(24deg);
+}
 
 .ajar .panel { transform: rotateY(72deg); filter: brightness(0.8); }
+
+.door.ajar:hover .panel,
+.door.ajar:focus-visible .panel { transform: rotateY(72deg); }
 
 .shake { animation: shake 0.5s; }
 
@@ -65,6 +70,6 @@
     animation: none;
     transition: none;
   }
-  .door:hover .panel,
-  .door:focus-visible .panel { transform: none; }
+  .door:not(.ajar):hover .panel,
+  .door:not(.ajar):focus-visible .panel { transform: none; }
 }
