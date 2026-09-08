@@ -1,0 +1,30 @@
+:root {
+  color-scheme: light;
+  --bg-page: #1a0d0b;
+  --color-red: #b42f25;
+  --color-red-dark: #7d2019;
+  --color-cream: #f6ede0;
+  --color-white: #ffffff;
+  --color-ink: #2b1a17;
+  --door-border: 2px dashed rgba(255, 255, 255, 0.8);
+  --radius: 8px;
+  --shadow-door: 0 6px 18px rgba(0, 0, 0, 0.35);
+  --font-display: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 40px;
+  --glow-today: 0 0 0 3px rgba(255, 255, 255, 0.9), 0 0 24px 4px rgba(255, 216, 122, 0.75);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg-page);
+  color: var(--color-cream);
+  font-family: var(--font-body);
+}
