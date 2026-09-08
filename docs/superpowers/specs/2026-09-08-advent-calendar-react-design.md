@@ -32,7 +32,10 @@ top-level folder `advent-calendar-react/`.
   door is "today".
 - Accessible: keyboard operable, screen-reader labels, respects
   `prefers-reduced-motion`.
-- Focused test suite (Vitest + React Testing Library).
+- Components organised by the **Atomic Design** pattern
+  (atoms → molecules → organisms → templates → pages).
+- Test suite (Vitest + React Testing Library) with an enforced **≥ 95 %
+  coverage** gate; a PR cannot be approved below it.
 - Static build, deployable to GitHub Pages / Vercel with no config.
 
 ## Non-goals
@@ -46,39 +49,66 @@ top-level folder `advent-calendar-react/`.
 
 ## Architecture
 
+### Atomic Design layering
+
+Components live under `src/components/<layer>/<Name>/`. Each component folder
+holds `<Name>.tsx`, `<Name>.module.css`, `<Name>.test.tsx`, and `index.ts`
+(re-export only). Layers and the **one-way import rule** — a component may
+import components only from layers strictly below it, never sideways, never up:
+
+| Layer | Contains | May import from |
+|---|---|---|
+| **atoms** | Indivisible UI: `Button`, `Badge`, `DoorNumber`, `Snow` (leaf canvas) | nothing (other than `lib/`, `styles/`) |
+| **molecules** | Small groups of atoms with one job: `Door`, `CopyableCode`, `SiteHeader` | atoms |
+| **organisms** | Sections with their own layout/state: `CalendarGrid`, `DayDialog` | molecules, atoms |
+| **templates** | Page skeleton, slots, no data/hooks: `CalendarTemplate` | organisms, molecules, atoms |
+| **pages** | A template wired to data, hooks, state: `CalendarPage` | templates, organisms, hooks, data |
+
+`hooks/`, `lib/`, `data/`, `styles/`, `assets/` are cross-cutting and may be
+imported by any layer. An ESLint rule (`import/no-restricted-paths` or
+`eslint-plugin-boundaries`) encodes the table above and fails CI on violation.
+
 ```
 advent-calendar-react/
   index.html
   package.json
-  vite.config.ts
+  vite.config.ts               # includes the Vitest + coverage config
   tsconfig.json
-  vitest.config.ts            # or test config inside vite.config.ts
+  .eslintrc.cjs                # atomic-layer boundary rules
+  .github/workflows/ci.yml
   src/
-    main.tsx
-    App.tsx
-    App.module.css
-    data/
-      calendar.ts             # CalendarDay[] — content + grid layout
+    main.tsx                   # renders <CalendarPage />
     components/
-      Calendar.tsx
-      Calendar.module.css
-      Door.tsx
-      Door.module.css
-      DayDialog.tsx
-      DayDialog.module.css
-      Snow.tsx
+      atoms/
+        Button/                # Button.tsx, .module.css, .test.tsx, index.ts
+        Badge/                 # "Hoje" / check / "abrir" chevron variants
+        DoorNumber/            # the day numeral on the door face
+        Snow/                  # fixed <canvas>, rAF loop, leaf
+      molecules/
+        Door/                  # gift face + DoorNumber + Badge; flip / shake
+        CopyableCode/          # code text + Button + copied/error status
+        SiteHeader/            # title + subtitle
+      organisms/
+        CalendarGrid/          # the irregular grid of <Door>; owns selectedDay
+        DayDialog/             # native <dialog>: title, message, CopyableCode
+      templates/
+        CalendarTemplate/      # background layer + Snow slot + header/grid slots
+      pages/
+        CalendarPage/          # useAdventDay + useOpenedDays -> template
     hooks/
       useOpenedDays.ts
       useAdventDay.ts
     lib/
       dayState.ts
       clipboard.ts
+    data/
+      calendar.ts              # CalendarDay[] — content + grid layout
     styles/
-      theme.css               # CSS custom properties: palette, type, spacing
+      theme.css                # CSS custom properties: palette, type, spacing
     assets/
       background.png
       gift1.png … gift5.png
-  src/**/*.test.ts(x)         # co-located tests
+  src/test/setup.ts            # RTL + jest-dom, matchMedia/dialog polyfills
 ```
 
 ### Data model
@@ -155,20 +185,39 @@ export function useOpenedDays(): {
 
 ### Components
 
-**`App.tsx`** — full-viewport layout: background image layer, `<Snow />`
-overlay, header (title + subtitle), `<Calendar />`. Owns nothing stateful.
+**atoms/`Button`** — styled `<button>` wrapper: `variant` (`solid` | `ghost`),
+`type` default `"button"`, forwards ref and the rest of the native props. Used
+by `CopyableCode` and `DayDialog`'s close control.
 
-**`Calendar.tsx`** — calls `useAdventDay()` and `useOpenedDays()`. Maps
-`CALENDAR` to `<Door />`, passing `day`, its `CalendarDay`, the computed
-`DayState`, and an `onOpen` callback. Holds the "which day is in the dialog"
-UI state (`selectedDay: CalendarDay | null`). Renders one `<DayDialog />`.
+**atoms/`Badge`** — small pill/icon with `variant`: `today` ("Hoje"),
+`opened` (check), `available` (chevron / "abrir"). Presentational only.
+
+**atoms/`DoorNumber`** — the day numeral rendered on the door face; `size` prop
+drives the type scale.
+
+**atoms/`Snow`** — the fixed full-viewport `<canvas>` and its `requestAnimation
+Frame` loop (details below). A leaf: no children, no other components.
+
+**pages/`CalendarPage`** — calls `useAdventDay()` and `useOpenedDays()`, builds
+the `CalendarDay` + `DayState` list, holds the `selectedDay: CalendarDay | null`
+UI state, and renders `<CalendarTemplate>` with the header, grid and dialog
+filled in.
 
 - `onOpen(day)`:
   - state `'locked'` → do nothing here; the Door plays its own shake.
   - state `'today' | 'past' | 'opened'` → `markOpened(day)` and
     `setSelectedDay(dayData)`.
 
-**`Door.tsx`** — a `<button>` sized via `gridArea` (inline style, switched by a
+**templates/`CalendarTemplate`** — pure layout: full-viewport background image
+layer, `<Snow />`, and named slots (`header`, `grid`, `dialog`) as props. No
+hooks, no data.
+
+**organisms/`CalendarGrid`** — receives the day list and `onOpen`; renders the
+irregular CSS grid of `<Door>` (grid templates ported from the original CSS).
+
+**molecules/`SiteHeader`** — title + subtitle.
+
+**molecules/`Door`** — a `<button>` sized via `gridArea` (inline style, switched by a
 CSS media query through two custom properties `--grid-area` /
 `--grid-area-mobile`). Contents: the gift image as background, the day number,
 and a state badge. Behaviour:
@@ -191,22 +240,24 @@ and a state badge. Behaviour:
 - All motion is gated behind `@media (prefers-reduced-motion: no-preference)`;
   with reduced motion the door just switches state with no flip/shake/glow.
 
-**`DayDialog.tsx`** — wraps the native `<dialog>` element.
+**organisms/`DayDialog`** — wraps the native `<dialog>` element.
 
 - `open` when `selectedDay != null`; call `dialogRef.current.showModal()` /
   `.close()` in an effect. Native `<dialog>` gives focus trapping, `Esc` to
   close, and `::backdrop`.
-- Content: day number, `title`, `message`, and — if `code` is set — the code in
-  a pill with a "Copiar" button.
-- Copy button calls `lib/clipboard.copyText(code)`. On success show "Copiado"
-  for ~2s; on failure show "Não foi possível copiar" and select the text so the
-  user can copy manually.
-- Close via the backdrop click, `Esc`, or an explicit "Fechar" button; on close
-  `Calendar` sets `selectedDay = null`.
+- Content: day number, `title`, `message`, and — if `code` is set —
+  `<CopyableCode code={code} />`.
+- Close via the backdrop click, `Esc`, or an explicit "Fechar" `Button`; on
+  close `CalendarPage` sets `selectedDay = null`.
 - Type scale keyed off `selectedDay.size` (ported intent from the original's
   `.card_2x2 .advento .title` etc., but only as it affects the dialog).
 
-**`Snow.tsx`** — a fixed-position full-viewport `<canvas>` behind the content
+**molecules/`CopyableCode`** — shows `code` in a pill with a `Button`; calls
+`lib/clipboard.copyText`. On success shows "Copiado" for ~2s; on failure shows
+"Não foi possível copiar" and selects the text so the user can copy manually.
+Isolated from `DayDialog` so its clipboard states are unit-testable.
+
+**atoms/`Snow`** — a fixed-position full-viewport `<canvas>` behind the content
 (`pointer-events: none`, low `z-index`).
 
 - ~50–80 flakes, each `{ x, y, r, speedY, drift, phase }`.
@@ -232,9 +283,10 @@ export async function copyText(text: string): Promise<boolean>;
 - `styles/theme.css` defines custom properties on `:root`: colour palette
   (deep red / cream / white, echoing the original `#b42f25`), font stacks,
   spacing steps, radii, shadow, and the door face border style.
-- Component styles are CSS Modules. No CSS framework.
-- Grid: `Calendar.module.css` holds the `grid-template-columns/rows` for mobile
-  and the `min-width: 769px` desktop variant, ported from the original.
+- Component styles are CSS Modules, co-located in each component folder.
+  No CSS framework.
+- Grid: `CalendarGrid.module.css` holds the `grid-template-columns/rows` for
+  mobile and the `min-width: 769px` desktop variant, ported from the original.
 - Layout is responsive down to ~320px; the grid template swaps at 769px exactly
   as the original did.
 
@@ -251,31 +303,94 @@ export async function copyText(text: string): Promise<boolean>;
 
 ## Testing
 
-Vitest + React Testing Library. Focused, not exhaustive.
+Vitest + React Testing Library + `@testing-library/jest-dom`. **Every component,
+hook and lib module ships with a co-located `*.test.tsx?` file** — this is a
+hard rule, not "focused, not exhaustive". Environment: `jsdom`, with
+`src/test/setup.ts` registering jest-dom and polyfilling `matchMedia` and
+`HTMLDialogElement.showModal/close` (jsdom lacks them).
 
-- **`dayState.test.ts`**: `getDayState` across locked / today / past / opened,
-  including `today === 0` (pre-December) and the `opened` set overriding a
-  past/today day.
-- **`useOpenedDays.test.ts`**: starts empty; `markOpened` persists and a
-  re-mount restores; simulate `localStorage.setItem` throwing and assert the
-  hook still records opens in memory.
-- **`useAdventDay.test.ts`**: `?day=10` override respected; invalid override
-  ignored; a mocked December date returns the clamped day; a mocked June date
-  returns 0.
-- **`Door.test.tsx`**: renders the right `aria-label` / `data-state` per state;
-  clicking a `locked` door adds the shake class and does not call `onOpen` with
-  an open; clicking a `today` door calls `onOpen(day)`.
-- **`DayDialog.test.tsx`**: shows `title` / `message`; renders the code pill
-  only when `code` is set; clicking "Copiar" calls a mocked `copyText` and
-  surfaces the "Copiado" state.
+### Coverage gate (≥ 95 %)
 
-No E2E / visual-regression layer.
+- `vite.config.ts` `test.coverage`: provider `v8`, reporters `text` +
+  `lcov` + `html`, and `thresholds` set to **95** for `statements`,
+  `branches`, `functions`, and `lines`. Vitest exits non-zero when any metric
+  is below 95, which fails the command and the CI job.
+- `coverage.include`: `src/**/*.{ts,tsx}`. `coverage.exclude`: `src/main.tsx`,
+  `**/index.ts` barrels, `**/*.test.*`, `src/test/**`, `src/data/**` (static
+  data), type-only files.
+- npm scripts: `test` (watch), `test:run` (once), `test:coverage`
+  (`vitest run --coverage`), `lint`, `typecheck`.
+
+### Test inventory
+
+- **`lib/dayState.test.ts`**: `getDayState` across locked / today / past /
+  opened, including `today === 0` (pre-December) and the `opened` set overriding
+  a past/today day; every branch hit.
+- **`lib/clipboard.test.ts`**: `writeText` success path; `writeText` rejects →
+  `execCommand` fallback path; both unavailable → returns `false`, never throws.
+- **`hooks/useOpenedDays.test.ts`**: starts empty; `markOpened` persists and a
+  re-mount restores; `markOpened` is idempotent; `localStorage.setItem`
+  throwing → hook still records opens in memory; malformed JSON in storage →
+  treated as empty.
+- **`hooks/useAdventDay.test.ts`**: `?day=10` override respected; non-integer /
+  out-of-range override ignored; mocked December date returns the clamped day
+  (e.g. Dec 30 → 25); mocked June date returns 0.
+- **`atoms/Button`**: renders children, `type="button"` default, `variant`
+  class, forwards `onClick` and `ref`.
+- **`atoms/Badge`**: each `variant` renders its label/icon and class.
+- **`atoms/DoorNumber`**: renders the number; `size` drives the class.
+- **`atoms/Snow`**: mounts a `<canvas>`; requests animation frames when motion
+  is allowed; renders nothing / starts no loop when `prefers-reduced-motion:
+  reduce`; cancels the frame on unmount. `requestAnimationFrame` /
+  `cancelAnimationFrame` / `matchMedia` mocked.
+- **`molecules/Door`**: right `aria-label` / `data-state` per state; the
+  correct `Badge` variant per state; clicking a `locked` door adds the shake
+  class and does not call `onOpen`; clicking `today` / `past` / `opened` calls
+  `onOpen(day)`; with `prefers-reduced-motion` no shake/flip class is applied
+  but `onOpen` still fires.
+- **`molecules/CopyableCode`**: renders the code; "Copiar" calls a mocked
+  `copyText`; success → "Copiado" shown then cleared; failure → error text
+  shown and the code element selected.
+- **`molecules/SiteHeader`**: renders title + subtitle text.
+- **`organisms/CalendarGrid`**: renders 25 `Door`s; forwards `onOpen` with the
+  clicked day; applies the grid class.
+- **`organisms/DayDialog`**: calls `showModal` when `selectedDay` set and
+  `close` when cleared; shows `title` / `message`; renders `CopyableCode` only
+  when `code` is set; "Fechar" and `Esc` and backdrop click each invoke
+  `onClose`; type-scale class follows `size`.
+- **`templates/CalendarTemplate`**: renders the `header` / `grid` / `dialog`
+  slots and the `Snow` layer.
+- **`pages/CalendarPage`**: with `?day=` fixed, renders the grid; clicking
+  today's door opens the dialog with that day's content and the day becomes
+  `opened` (persisted via the real `useOpenedDays`, `localStorage` mocked);
+  clicking a locked door does not open the dialog.
+- **`data/calendar.test.ts`**: invariant — exactly 25 entries, `day` values are
+  the unique set 1..25, every `image` is a known key, every `gridArea` /
+  `gridAreaMobile` is non-empty.
+
+No E2E / visual-regression layer; the coverage gate is enforced on unit +
+component tests only.
+
+## CI
+
+`.github/workflows/ci.yml`, run on every PR and push to `main`:
+
+1. `npm ci`
+2. `npm run typecheck` (`tsc --noEmit`)
+3. `npm run lint` (ESLint, including the atomic-layer boundary rule)
+4. `npm run test:coverage` — fails if any coverage metric < 95 %
+5. `npm run build`
+
+Branch protection on `main` requires this workflow to pass, so a PR that drops
+coverage below 95 % or violates a layer boundary cannot be merged.
 
 ## Deployment
 
 - `vite build` → static `dist/`.
 - `vite.config.ts` `base` set so it works under a GitHub Pages project path;
   a short README section covers Pages and Vercel.
+- Optional follow-up (not in the first plan): a `deploy` workflow publishing
+  `dist/` to GitHub Pages on push to `main`.
 
 ## Open questions
 
