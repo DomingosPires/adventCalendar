@@ -1,0 +1,15 @@
+.number {
+  position: absolute;
+  right: var(--space-2);
+  bottom: var(--space-1);
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-white);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  line-height: 1;
+}
+
+.size-1x1 { font-size: 1.1rem; }
+.size-1x2 { font-size: 1.3rem; }
+.size-2x1 { font-size: 1.6rem; }
+.size-2x2 { font-size: 2.2rem; }
