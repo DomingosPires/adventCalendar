@@ -8,6 +8,14 @@ beforeEach(() => {
   vi.restoreAllMocks();
 });
 
+test('falls back to memory and mounts when getItem throws', () => {
+  vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+    throw new Error('blocked');
+  });
+  const { result } = renderHook(() => useOpenedDays());
+  expect([...result.current.openedDays]).toEqual([]);
+});
+
 test('starts empty when storage is empty', () => {
   const { result } = renderHook(() => useOpenedDays());
   expect([...result.current.openedDays]).toEqual([]);
