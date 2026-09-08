@@ -19,19 +19,17 @@ if (!window.matchMedia) {
   })) as typeof window.matchMedia;
 }
 
-if (!HTMLCanvasElement.prototype.getContext) {
-  HTMLCanvasElement.prototype.getContext = (() => ({
-    clearRect: () => {},
-    fillRect: () => {},
-    beginPath: () => {},
-    arc: () => {},
-    fill: () => {},
-    setTransform: () => {},
-    save: () => {},
-    restore: () => {},
-    fillStyle: '',
-  })) as unknown as HTMLCanvasElement['getContext'];
-}
+HTMLCanvasElement.prototype.getContext = (() => ({
+  clearRect: () => {},
+  fillRect: () => {},
+  beginPath: () => {},
+  arc: () => {},
+  fill: () => {},
+  setTransform: () => {},
+  save: () => {},
+  restore: () => {},
+  fillStyle: '',
+})) as unknown as HTMLCanvasElement['getContext'];
 
 if (
   typeof HTMLDialogElement !== 'undefined' &&
