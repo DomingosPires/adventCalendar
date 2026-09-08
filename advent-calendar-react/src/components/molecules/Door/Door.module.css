@@ -70,6 +70,6 @@
     animation: none;
     transition: none;
   }
-  .door:not(.ajar):hover .panel,
-  .door:not(.ajar):focus-visible .panel { transform: none; }
+  .door:not([data-state='locked']):not(.ajar):hover .panel,
+  .door:not([data-state='locked']):not(.ajar):focus-visible .panel { transform: none; }
 }

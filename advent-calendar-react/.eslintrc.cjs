@@ -12,7 +12,7 @@ module.exports = {
     'plugin:import/typescript',
   ],
   settings: {
-    'import/resolver': { typescript: { project: './tsconfig.json' } },
+    'import/resolver': { typescript: { project: './tsconfig.app.json' } },
   },
   rules: {
     'import/no-restricted-paths': ['error', {
