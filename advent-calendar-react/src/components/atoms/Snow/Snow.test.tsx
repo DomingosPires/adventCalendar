@@ -79,5 +79,7 @@ test('runs the animation loop and resumes when the tab is shown again', () => {
   Object.defineProperty(document, 'hidden', { value: false, configurable: true });
   document.dispatchEvent(new Event('visibilitychange'));
 
-  expect(requestAnimationFrame).toHaveBeenCalled();
+  // 1 from render + 60 from the driven frames (each tick schedules the next)
+  // + 1 from re-arming on show. The no-op tick while hidden schedules nothing.
+  expect(requestAnimationFrame).toHaveBeenCalledTimes(62);
 });
