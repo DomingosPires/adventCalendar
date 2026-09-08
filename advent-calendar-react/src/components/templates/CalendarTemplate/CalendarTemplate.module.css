@@ -1,0 +1,18 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.background {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, #3a1512, var(--bg-page) 70%),
+    url('../../../assets/background.png') center / cover no-repeat;
+  z-index: 0;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+}
