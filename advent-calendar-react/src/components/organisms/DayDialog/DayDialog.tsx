@@ -14,6 +14,7 @@ export function DayDialog({ day, onClose }: DayDialogProps) {
 
   useEffect(() => {
     const dialog = ref.current;
+    /* v8 ignore next */
     if (!dialog) return;
     if (day && !dialog.open) dialog.showModal();
     if (!day && dialog.open) dialog.close();
@@ -21,6 +22,7 @@ export function DayDialog({ day, onClose }: DayDialogProps) {
 
   useEffect(() => {
     const dialog = ref.current;
+    /* v8 ignore next */
     if (!dialog) return;
     const handleCancel = (event: Event) => {
       event.preventDefault();

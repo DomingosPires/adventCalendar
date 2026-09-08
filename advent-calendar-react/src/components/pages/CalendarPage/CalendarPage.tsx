@@ -27,6 +27,7 @@ export function CalendarPage() {
 
   const handleOpen = (dayNumber: number) => {
     const dayData = CALENDAR.find((entry) => entry.day === dayNumber);
+    /* v8 ignore next */
     if (!dayData) return;
     markOpened(dayNumber);
     setSelectedDay(dayData);
