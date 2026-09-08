@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '../../atoms/Button';
 import { copyText } from '../../../lib/clipboard';
 import styles from './CopyableCode.module.css';
@@ -13,6 +13,13 @@ export function CopyableCode({ code }: CopyableCodeProps) {
   const [status, setStatus] = useState<Status>('idle');
   const codeRef = useRef<HTMLSpanElement>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(
+    () => () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    },
+    [],
+  );
 
   const handleCopy = async () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);

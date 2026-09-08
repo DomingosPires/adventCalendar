@@ -46,10 +46,14 @@ export function DayDialog({ day, onClose }: DayDialogProps) {
       ref={ref}
       className={styles.dialog}
       onClick={handleBackdrop}
-      aria-labelledby="day-dialog-title"
+      aria-labelledby={day ? 'day-dialog-title' : undefined}
     >
       {day && (
-        <div className={`${styles.body} ${styles[`size-${day.size}`]}`}>
+        <div
+          className={[styles.body, styles[`size-${day.size}`]]
+            .filter(Boolean)
+            .join(' ')}
+        >
           <p className={styles.day}>{day.day}</p>
           <h2 id="day-dialog-title" className={styles.title}>
             {day.title}
