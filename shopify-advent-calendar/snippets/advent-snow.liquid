@@ -1,0 +1,7 @@
+{%- comment -%} Decorative snow. Param: count (default 40). {%- endcomment -%}
+{%- assign flakes = count | default: 40 -%}
+<div class="advent__snow" aria-hidden="true">
+  {%- for i in (1..flakes) -%}
+    <span class="advent__flake" style="--i: {{ i }}; --n: {{ flakes }};"></span>
+  {%- endfor -%}
+</div>
