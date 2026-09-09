@@ -24,7 +24,7 @@
   background-size: cover;
   background-position: center;
   box-shadow: var(--shadow-door);
-  transform-origin: bottom left;
+  transform-origin: left center;
   transition: transform 0.5s ease-in-out;
 }
 
@@ -41,13 +41,18 @@
 
 .door:not([data-state='locked']):not(.ajar):hover .panel,
 .door:not([data-state='locked']):not(.ajar):focus-visible .panel {
-  transform: rotateY(24deg);
+  transform: rotateY(-24deg);
 }
 
-.ajar .panel { transform: rotateY(72deg); filter: brightness(0.8); }
+.ajar .panel {
+  transform: rotateY(-14deg);
+  filter: brightness(0.9);
+}
 
 .door.ajar:hover .panel,
-.door.ajar:focus-visible .panel { transform: rotateY(72deg); }
+.door.ajar:focus-visible .panel {
+  transform: rotateY(-14deg);
+}
 
 .shake { animation: shake 0.5s; }
 

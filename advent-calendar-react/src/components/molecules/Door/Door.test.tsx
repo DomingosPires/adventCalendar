@@ -25,10 +25,10 @@ function mockReducedMotion(matches: boolean) {
 afterEach(() => vi.restoreAllMocks());
 
 test.each([
-  ['locked', 'Dia 5, ainda fechado'],
-  ['today', 'Dia 5, hoje — abrir'],
+  ['locked', 'Dia 5, por abrir mais tarde'],
+  ['today', 'Dia 5, hoje'],
   ['past', 'Dia 5, por abrir'],
-  ['opened', 'Dia 5, aberto'],
+  ['opened', 'Dia 5, aberto — ver de novo'],
 ] as const)('state %s has data-state and aria-label', (state, label) => {
   render(<Door day={day} state={state} onOpen={vi.fn()} />);
   const btn = screen.getByRole('button');
@@ -36,15 +36,22 @@ test.each([
   expect(btn).toHaveAccessibleName(label);
 });
 
-test('locked shows no badge; today/past/opened show their badge', () => {
+test('only the today state renders a badge', () => {
   const { rerender } = render(<Door day={day} state="locked" onOpen={vi.fn()} />);
-  expect(screen.queryByText(/Hoje|Abrir|Aberto/)).not.toBeInTheDocument();
+  expect(screen.queryByText('Hoje')).not.toBeInTheDocument();
   rerender(<Door day={day} state="today" onOpen={vi.fn()} />);
   expect(screen.getByText('Hoje')).toBeInTheDocument();
   rerender(<Door day={day} state="past" onOpen={vi.fn()} />);
-  expect(screen.getByText('Abrir')).toBeInTheDocument();
+  expect(screen.queryByText('Hoje')).not.toBeInTheDocument();
   rerender(<Door day={day} state="opened" onOpen={vi.fn()} />);
-  expect(screen.getByText(/Aberto/)).toBeInTheDocument();
+  expect(screen.queryByText('Hoje')).not.toBeInTheDocument();
+});
+
+test('an opened door carries the ajar class; others do not', () => {
+  const { rerender } = render(<Door day={day} state="opened" onOpen={vi.fn()} />);
+  expect(screen.getByRole('button')).toHaveClass('ajar');
+  rerender(<Door day={day} state="past" onOpen={vi.fn()} />);
+  expect(screen.getByRole('button')).not.toHaveClass('ajar');
 });
 
 test('clicking a locked door shakes and does not call onOpen', () => {

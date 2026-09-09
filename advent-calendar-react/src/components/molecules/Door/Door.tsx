@@ -1,21 +1,16 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { Badge, type BadgeVariant } from '../../atoms/Badge';
+import { motion } from 'framer-motion';
+import { Badge } from '../../atoms/Badge';
 import { DoorNumber } from '../../atoms/DoorNumber';
 import type { CalendarDay } from '../../../data/calendar';
 import type { DayState } from '../../../lib/dayState';
 import styles from './Door.module.css';
 
 const ARIA_LABEL: Record<DayState, (n: number) => string> = {
-  locked: (n) => `Dia ${n}, ainda fechado`,
-  today: (n) => `Dia ${n}, hoje — abrir`,
+  locked: (n) => `Dia ${n}, por abrir mais tarde`,
+  today: (n) => `Dia ${n}, hoje`,
   past: (n) => `Dia ${n}, por abrir`,
-  opened: (n) => `Dia ${n}, aberto`,
-};
-
-const BADGE_FOR_STATE: Partial<Record<DayState, BadgeVariant>> = {
-  today: 'today',
-  past: 'available',
-  opened: 'opened',
+  opened: (n) => `Dia ${n}, aberto — ver de novo`,
 };
 
 function reducedMotion(): boolean {
@@ -36,7 +31,6 @@ export function Door({ day, state, onOpen }: DoorProps) {
   const shakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
-  const badge = BADGE_FOR_STATE[state];
 
   const clearShakeTimeout = () => {
     if (shakeTimeoutRef.current) {
@@ -70,7 +64,8 @@ export function Door({ day, state, onOpen }: DoorProps) {
   } as CSSProperties;
 
   return (
-    <button
+    <motion.button
+      layoutId={`door-${day.day}`}
       type="button"
       data-state={state}
       aria-label={ARIA_LABEL[state](day.day)}
@@ -88,7 +83,7 @@ export function Door({ day, state, onOpen }: DoorProps) {
     >
       <span className={styles.panel} aria-hidden="true" />
       <DoorNumber value={day.day} size={day.size} />
-      {badge && <Badge variant={badge} />}
-    </button>
+      {state === 'today' && <Badge />}
+    </motion.button>
   );
 }
