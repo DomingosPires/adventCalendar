@@ -58,10 +58,31 @@ test('shows the day content and links the title', () => {
 });
 
 test('renders the promo code only when the day has one', () => {
-  const { rerender } = render(<DoorFocus day={withCode} originRect={null} onClose={vi.fn()} />);
+  const { unmount } = render(<DoorFocus day={withCode} originRect={null} onClose={vi.fn()} />);
   expect(screen.getByText('ADVENTO-08')).toBeInTheDocument();
-  rerender(<DoorFocus day={noCode} originRect={null} onClose={vi.fn()} />);
+  unmount();
+  render(<DoorFocus day={noCode} originRect={null} onClose={vi.fn()} />);
   expect(screen.queryByText('ADVENTO-08')).not.toBeInTheDocument();
+});
+
+test('reopening for another day swaps the content (regression: second open)', async () => {
+  const rect = { top: 0, left: 0, width: 40, height: 40, right: 40, bottom: 40, x: 0, y: 0, toJSON() {} } as DOMRect;
+  const { rerender } = render(
+    <DoorFocus day={withCode} originRect={rect} onClose={vi.fn()} />,
+  );
+  expect(within(screen.getByRole('dialog')).getByText('8')).toBeInTheDocument();
+
+  rerender(<DoorFocus day={null} originRect={null} onClose={vi.fn()} />);
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
+  );
+
+  rerender(<DoorFocus day={noCode} originRect={rect} onClose={vi.fn()} />);
+  const dialog = await screen.findByRole('dialog');
+  expect(within(dialog).getByText('9')).toBeInTheDocument();
+  expect(within(dialog).getByRole('heading', { level: 2 })).toHaveTextContent(
+    'Luz das velas',
+  );
 });
 
 test('accepts an origin rect without crashing', () => {
@@ -72,11 +93,12 @@ test('accepts an origin rect without crashing', () => {
 
 test('a rect origin still renders the code and content', () => {
   const rect = { top: 0, left: 0, width: 30, height: 30, right: 30, bottom: 30, x: 0, y: 0, toJSON() {} } as DOMRect;
-  const { rerender } = render(<DoorFocus day={withCode} originRect={rect} onClose={vi.fn()} />);
+  const { unmount } = render(<DoorFocus day={withCode} originRect={rect} onClose={vi.fn()} />);
   expect(screen.getByText('ADVENTO-08')).toBeInTheDocument();
-  rerender(<DoorFocus day={noCode} originRect={rect} onClose={vi.fn()} />);
-  expect(screen.queryByText('ADVENTO-08')).not.toBeInTheDocument();
   expect(screen.getByRole('dialog')).toHaveAttribute('data-reduced-motion', 'false');
+  unmount();
+  render(<DoorFocus day={noCode} originRect={rect} onClose={vi.fn()} />);
+  expect(screen.queryByText('ADVENTO-08')).not.toBeInTheDocument();
 });
 
 test('close button, scrim press-and-release and Escape all call onClose; card click does not', () => {
@@ -178,31 +200,10 @@ test('under reduced motion it still renders a working dialog on the reduced bran
   expect(onClose).toHaveBeenCalledTimes(1);
 });
 
-const rectAt = (left: number, top: number, width: number, height: number): DOMRect =>
-  ({
-    left, top, width, height,
-    right: left + width, bottom: top + height, x: left, y: top,
-    toJSON() {},
-  }) as DOMRect;
-
-test('with motion allowed and an origin rect the card takes the FLIP branch', () => {
-  mockReducedMotion(false);
-  render(<DoorFocus day={noCode} originRect={rectAt(20, 30, 40, 40)} onClose={vi.fn()} />);
-  const dialog = screen.getByRole('dialog');
-  expect(dialog).toHaveAttribute('data-reduced-motion', 'false');
-  expect(dialog).toHaveAttribute('data-open-anim', 'flip');
-});
-
-test('with a null origin rect the card fades in centred, not from a rect', () => {
-  mockReducedMotion(false);
-  render(<DoorFocus day={noCode} originRect={null} onClose={vi.fn()} />);
-  expect(screen.getByRole('dialog')).toHaveAttribute('data-open-anim', 'fade');
-});
-
-test('reduced motion fades even when an origin rect is given', () => {
+test('flags the reduced-motion branch on the card', () => {
   mockReducedMotion(true);
-  render(<DoorFocus day={noCode} originRect={rectAt(0, 0, 30, 30)} onClose={vi.fn()} />);
-  expect(screen.getByRole('dialog')).toHaveAttribute('data-open-anim', 'fade');
+  render(<DoorFocus day={noCode} originRect={null} onClose={vi.fn()} />);
+  expect(screen.getByRole('dialog')).toHaveAttribute('data-reduced-motion', 'true');
 });
 
 test('the leaf shine sweep renders only when motion is allowed', () => {
@@ -218,20 +219,3 @@ test('the leaf shine sweep renders only when motion is allowed', () => {
   expect(document.body.querySelector('[data-shine]')).toBeNull();
 });
 
-test('the glow halo is present and aria-hidden', () => {
-  mockReducedMotion(false);
-  render(<DoorFocus day={noCode} originRect={null} onClose={vi.fn()} />);
-  const halo = document.body.querySelector('[data-halo]');
-  expect(halo).not.toBeNull();
-  expect(halo).toHaveAttribute('aria-hidden', 'true');
-});
-
-test('measures the card and runs the FLIP without crashing when it has a layout', () => {
-  mockReducedMotion(false);
-  const spy = vi
-    .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
-    .mockReturnValue(rectAt(120, 80, 420, 520));
-  render(<DoorFocus day={noCode} originRect={rectAt(10, 10, 42, 52)} onClose={vi.fn()} />);
-  expect(screen.getByRole('dialog')).toBeInTheDocument();
-  spy.mockRestore();
-});

@@ -17,7 +17,16 @@
   color: var(--color-cream);
   background: var(--glass-solid);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-4);
+  /* Warm glow ramps in around the whole card once it lands. A box-shadow is
+     not clipped by overflow:hidden and always hugs the card's real size. */
+  box-shadow: var(--shadow-4), 0 0 0 0 transparent;
+  animation: haloIn 0.7s ease-out 0.4s both;
+}
+@keyframes haloIn {
+  to {
+    box-shadow: var(--shadow-4),
+      0 0 120px 20px color-mix(in srgb, var(--glow-warm) 24%, transparent);
+  }
 }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .card {
@@ -37,26 +46,6 @@
   --motif-accent: var(--color-brass);
 }
 .watermark .motif { width: 100%; height: auto; }
-
-/* Warm halo that settles behind the open card. Sibling of .card (outside its
-   overflow:hidden), centred in the scrim, heavily blurred. */
-.halo {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: min(92vw, 460px);
-  height: min(78vh, 540px);
-  transform: translate(-50%, -50%);
-  border-radius: 44px;
-  background: radial-gradient(
-    58% 54% at 50% 50%,
-    color-mix(in srgb, var(--glow-warm) 55%, transparent),
-    color-mix(in srgb, var(--glow-warm) 12%, transparent) 55%,
-    transparent 74%
-  );
-  filter: blur(36px);
-  pointer-events: none;
-}
 
 .box {
   position: relative;
@@ -102,9 +91,10 @@
   position: absolute;
   inset: 0;
   z-index: 2;
+  overflow: hidden;
   border-radius: var(--radius-lg);
   background: linear-gradient(160deg, var(--surface-2), #1c2c25);
-  box-shadow: var(--bevel-hi), 8px 0 24px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--bevel-hi), inset 0 0 40px rgba(0, 0, 0, 0.4);
 }
 .cardLeaf .motif { position: absolute; inset: 30%; width: 40%; height: 40%; }
 
@@ -145,6 +135,11 @@
 .close:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
 @media (prefers-reduced-motion: reduce) {
-  .halo, .cardLeaf { animation: none; transition: none; }
+  .cardLeaf { animation: none; transition: none; }
   .close { transition: none; }
+  .card {
+    animation: none;
+    box-shadow: var(--shadow-4),
+      0 0 120px 20px color-mix(in srgb, var(--glow-warm) 24%, transparent);
+  }
 }
