@@ -1,0 +1,125 @@
+{%- liquid
+  assign calendar = section.settings.calendar_entry
+  if calendar == blank and section.settings.calendar_handle != blank
+    assign calendar = shop.metaobjects.advent_calendar[section.settings.calendar_handle]
+  endif
+
+  assign max_day = 25
+
+  assign bg = section.settings.bg_override | default: calendar.background_color.value | default: '#1c1613'
+  assign fg = section.settings.text_override | default: calendar.text_color.value | default: '#f6ede0'
+  assign door = section.settings.door_override | default: calendar.door_color.value | default: '#2a3d35'
+  assign door_fg = section.settings.door_text_override | default: calendar.door_text_color.value | default: '#cfe3d4'
+  assign accent = section.settings.accent_override | default: calendar.accent_color.value | default: '#c9a24b'
+
+  assign preview_day = section.settings.preview_day | plus: 0
+  assign month = 'now' | date: '%m' | plus: 0
+  assign now_ts = 'now' | date: '%s' | plus: 0
+  assign current_day = 0
+
+  if preview_day > 0
+    assign current_day = preview_day
+  elsif calendar.start_date.value == blank and month != 12
+    assign current_day = 0
+  else
+    for n in (1..max_day)
+      assign offset = n | minus: 1 | times: 86400
+      if calendar.start_date.value != blank
+        assign base = calendar.start_date.value | date: '%s' | plus: 0
+        assign unlock_ts = base | plus: offset
+      else
+        assign yr = 'now' | date: '%Y'
+        assign nn = n | prepend: '0' | slice: -2, 2
+        assign unlock_ts = yr | append: '-12-' | append: nn | append: 'T00:00:00' | date: '%s' | plus: 0
+      endif
+      if now_ts >= unlock_ts
+        assign current_day = n
+      endif
+    endfor
+  endif
+
+  assign show_snow = true
+  if calendar.show_snow.value == false
+    assign show_snow = false
+  endif
+  assign guides = section.settings.layout_guides
+-%}
+<script src="{{ 'advent-calendar.helpers.js' | asset_url }}" defer></script>
+<script src="{{ 'advent-calendar.js' | asset_url }}" defer></script>
+{{ 'advent-calendar.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="advent"
+  data-section-id="{{ section.id }}"
+  data-current-day="{{ current_day }}"
+  data-max-day="{{ max_day }}"
+  data-guides="{% if guides %}true{% else %}false{% endif %}"
+  style="
+    --advent-bg: {{ bg }};
+    --advent-text: {{ fg }};
+    --advent-door: {{ door }};
+    --advent-door-text: {{ door_fg }};
+    --advent-accent: {{ accent }};
+    --advent-cols: {{ section.settings.grid_columns }};
+    --advent-rows: {{ section.settings.grid_rows }};
+    --advent-cols-m: {{ section.settings.grid_columns_mobile }};
+    --advent-rows-m: {{ section.settings.grid_rows_mobile }};
+    --advent-gap: {{ section.settings.grid_gap }}px;
+  "
+>
+  {%- if show_snow -%}{%- render 'advent-snow' -%}{%- endif -%}
+
+  <header class="advent__header">
+    <h2 class="advent__title">{{ calendar.heading.value | default: 'Advent calendar' }}</h2>
+    {%- if calendar.subheading.value != blank -%}
+      <p class="advent__subtitle">{{ calendar.subheading.value }}</p>
+    {%- endif -%}
+  </header>
+
+  {%- if calendar == blank -%}
+    <p class="advent__empty">{{ 'sections.advent_calendar.no_entry' | t }}</p>
+  {%- else -%}
+    <div class="advent__grid" role="list">
+      {%- assign days = calendar.days.value | sort: 'day' -%}
+      {%- for day_entry in days -%}
+        {%- render 'advent-door', day_entry: day_entry, current_day: current_day -%}
+      {%- endfor -%}
+    </div>
+    <div class="advent__guide-summary" hidden></div>
+    {%- for day_entry in days -%}
+      {%- render 'advent-overlay', day_entry: day_entry -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+  <div class="advent__portal" hidden></div>
+</section>
+
+{% schema %}
+{
+  "name": "Advent calendar",
+  "tag": "section",
+  "class": "advent-calendar-section",
+  "enabled_on": { "templates": ["*"] },
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "metaobject", "id": "calendar_entry", "label": "Advent calendar", "metaobject_type": "advent_calendar" },
+    { "type": "text", "id": "calendar_handle", "label": "…or entry handle (fallback)", "info": "Use if the picker above is unavailable on your theme version." },
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "grid_columns", "min": 3, "max": 12, "step": 1, "default": 7, "label": "Columns (desktop)" },
+    { "type": "range", "id": "grid_rows", "min": 3, "max": 16, "step": 1, "default": 8, "label": "Rows (desktop)" },
+    { "type": "range", "id": "grid_columns_mobile", "min": 2, "max": 8, "step": 1, "default": 4, "label": "Columns (mobile)" },
+    { "type": "range", "id": "grid_rows_mobile", "min": 4, "max": 30, "step": 1, "default": 14, "label": "Rows (mobile)" },
+    { "type": "range", "id": "grid_gap", "min": 0, "max": 24, "step": 1, "default": 8, "unit": "px", "label": "Gap" },
+    { "type": "checkbox", "id": "layout_guides", "default": false, "label": "Show layout guides", "info": "Draws the grid and flags gaps/overlaps. Turn off in production." },
+    { "type": "header", "content": "Behaviour" },
+    { "type": "range", "id": "preview_day", "min": 0, "max": 25, "step": 1, "default": 0, "label": "Preview day", "info": "0 = use the real date." },
+    { "type": "header", "content": "Style overrides (optional)" },
+    { "type": "color", "id": "bg_override", "label": "Background" },
+    { "type": "color", "id": "text_override", "label": "Text" },
+    { "type": "color", "id": "door_override", "label": "Door" },
+    { "type": "color", "id": "door_text_override", "label": "Door text" },
+    { "type": "color", "id": "accent_override", "label": "Accent" }
+  ],
+  "presets": [{ "name": "Advent calendar" }]
+}
+{% endschema %}
