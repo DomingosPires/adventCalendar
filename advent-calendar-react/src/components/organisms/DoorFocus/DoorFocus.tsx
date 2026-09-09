@@ -189,11 +189,29 @@ function DoorFocusPanel({ day, originRect, onClose }: PanelProps) {
 
   const contentVariants = {
     hidden: {},
-    show: { transition: { staggerChildren: reduce ? 0 : 0.06, delayChildren: reduce ? 0 : 0.2 } },
+    show: {
+      transition: {
+        staggerChildren: reduce ? 0 : 0.07,
+        delayChildren: reduce ? 0 : 0.3,
+      },
+    },
   };
   const itemVariants = reduce
     ? { hidden: { opacity: 1 }, show: { opacity: 1 } }
-    : { hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } };
+    : {
+        hidden: { opacity: 0, y: 10, filter: 'blur(6px)' },
+        show: { opacity: 1, y: 0, filter: 'blur(0px)' },
+      };
+  const medallionVariants = reduce
+    ? { hidden: { opacity: 1 }, show: { opacity: 1 } }
+    : {
+        hidden: { opacity: 0, scale: 0.6 },
+        show: {
+          opacity: 1,
+          scale: 1,
+          transition: { type: 'spring' as const, stiffness: 420, damping: 14 },
+        },
+      };
 
   return createPortal(
     <motion.div
@@ -205,6 +223,19 @@ function DoorFocusPanel({ day, originRect, onClose }: PanelProps) {
       exit={{ opacity: 0, pointerEvents: 'none' }}
       transition={{ duration: reduce ? 0 : durations.base }}
     >
+      <motion.div
+        className={styles.halo}
+        data-halo
+        aria-hidden="true"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: reduce ? 0.5 : 1 }}
+        exit={{ opacity: 0 }}
+        transition={{
+          delay: reduce ? 0 : 0.45,
+          duration: reduce ? 0 : 0.6,
+          ease: 'easeOut',
+        }}
+      />
       <motion.div
         ref={scope}
         data-reduced-motion={reduce ? 'true' : 'false'}
@@ -224,7 +255,6 @@ function DoorFocusPanel({ day, originRect, onClose }: PanelProps) {
         <div className={styles.watermark} aria-hidden="true">
           <Motif name={day.motif} className={styles.motif} />
         </div>
-        <div className={styles.bloom} aria-hidden="true" />
 
         <motion.div
           className={styles.box}
@@ -232,7 +262,7 @@ function DoorFocusPanel({ day, originRect, onClose }: PanelProps) {
           initial="hidden"
           animate="show"
         >
-          <motion.div className={styles.medallion} variants={itemVariants}>
+          <motion.div className={styles.medallion} variants={medallionVariants}>
             <span className={styles.medallionNumber}>{day.day}</span>
           </motion.div>
           <motion.h2 id={TITLE_ID} className={styles.title} variants={itemVariants}>
@@ -258,6 +288,15 @@ function DoorFocusPanel({ day, originRect, onClose }: PanelProps) {
           aria-hidden="true"
         >
           <Motif name={day.motif} className={styles.motif} />
+          {!reduce && (
+            <motion.div
+              className={styles.shine}
+              data-shine
+              initial={{ x: '-130%' }}
+              animate={{ x: '130%' }}
+              transition={{ delay: 0.12, duration: 0.55, ease: 'easeInOut' }}
+            />
+          )}
         </motion.div>
 
         <button

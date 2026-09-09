@@ -205,6 +205,27 @@ test('reduced motion fades even when an origin rect is given', () => {
   expect(screen.getByRole('dialog')).toHaveAttribute('data-open-anim', 'fade');
 });
 
+test('the leaf shine sweep renders only when motion is allowed', () => {
+  mockReducedMotion(false);
+  const { unmount } = render(
+    <DoorFocus day={noCode} originRect={null} onClose={vi.fn()} />,
+  );
+  expect(document.body.querySelector('[data-shine]')).not.toBeNull();
+  unmount();
+
+  mockReducedMotion(true);
+  render(<DoorFocus day={noCode} originRect={null} onClose={vi.fn()} />);
+  expect(document.body.querySelector('[data-shine]')).toBeNull();
+});
+
+test('the glow halo is present and aria-hidden', () => {
+  mockReducedMotion(false);
+  render(<DoorFocus day={noCode} originRect={null} onClose={vi.fn()} />);
+  const halo = document.body.querySelector('[data-halo]');
+  expect(halo).not.toBeNull();
+  expect(halo).toHaveAttribute('aria-hidden', 'true');
+});
+
 test('measures the card and runs the FLIP without crashing when it has a layout', () => {
   mockReducedMotion(false);
   const spy = vi

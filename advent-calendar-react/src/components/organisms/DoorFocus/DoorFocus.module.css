@@ -38,17 +38,24 @@
 }
 .watermark .motif { width: 100%; height: auto; }
 
-.bloom {
+/* Warm halo that settles behind the open card. Sibling of .card (outside its
+   overflow:hidden), centred in the scrim, heavily blurred. */
+.halo {
   position: absolute;
-  inset: -20%;
-  background: radial-gradient(40% 40% at 50% 55%, color-mix(in srgb, var(--glow-warm) 35%, transparent), transparent 70%);
-  opacity: 0;
-  animation: bloom 0.9s ease-out 0.35s both;
+  top: 50%;
+  left: 50%;
+  width: min(92vw, 460px);
+  height: min(78vh, 540px);
+  transform: translate(-50%, -50%);
+  border-radius: 44px;
+  background: radial-gradient(
+    58% 54% at 50% 50%,
+    color-mix(in srgb, var(--glow-warm) 55%, transparent),
+    color-mix(in srgb, var(--glow-warm) 12%, transparent) 55%,
+    transparent 74%
+  );
+  filter: blur(36px);
   pointer-events: none;
-}
-@keyframes bloom {
-  30% { opacity: 1; }
-  100% { opacity: 0.25; }
 }
 
 .box {
@@ -101,6 +108,22 @@
 }
 .cardLeaf .motif { position: absolute; inset: 30%; width: 40%; height: 40%; }
 
+/* A diagonal glint that sweeps across the leaf as it lifts. */
+.shine {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.16) 47%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.16) 53%,
+    transparent 62%
+  );
+  pointer-events: none;
+}
+
 .close {
   position: absolute;
   top: var(--space-2);
@@ -122,6 +145,6 @@
 .close:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
 @media (prefers-reduced-motion: reduce) {
-  .bloom, .cardLeaf { animation: none; }
+  .halo, .cardLeaf { animation: none; transition: none; }
   .close { transition: none; }
 }
