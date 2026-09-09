@@ -28,11 +28,12 @@
   transition: transform 0.5s ease-in-out;
 }
 
-.img-gift1 .panel { background-image: url('../../../assets/gift1.png'); }
-.img-gift2 .panel { background-image: url('../../../assets/gift2.png'); }
-.img-gift3 .panel { background-image: url('../../../assets/gift3.png'); }
-.img-gift4 .panel { background-image: url('../../../assets/gift4.png'); }
-.img-gift5 .panel { background-image: url('../../../assets/gift5.png'); }
+.panel .motif {
+  position: absolute;
+  inset: 22%;
+  width: 56%;
+  height: 56%;
+}
 
 .door[data-state='locked'] .panel { filter: grayscale(0.6) brightness(0.7); }
 

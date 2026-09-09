@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { motion } from 'framer-motion';
 import { Badge } from '../../atoms/Badge';
 import { DoorNumber } from '../../atoms/DoorNumber';
+import { Motif } from '../../atoms/Motif';
 import type { CalendarDay } from '../../../data/calendar';
 import type { DayState } from '../../../lib/dayState';
 import { doorLayoutId } from './doorLayoutId';
@@ -73,7 +74,6 @@ export function Door({ day, state, onOpen }: DoorProps) {
       style={style}
       className={[
         styles.door,
-        styles[`img-${day.image}`],
         state === 'opened' ? styles.ajar : '',
         shaking ? styles.shake : '',
       ]
@@ -82,7 +82,9 @@ export function Door({ day, state, onOpen }: DoorProps) {
       onClick={handleClick}
       onAnimationEnd={stopShaking}
     >
-      <span className={styles.panel} aria-hidden="true" />
+      <span className={styles.panel} aria-hidden="true">
+        <Motif name={day.motif} />
+      </span>
       <DoorNumber value={day.day} size={day.size} />
       {state === 'today' && <Badge />}
     </motion.button>

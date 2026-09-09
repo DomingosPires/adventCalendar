@@ -1,6 +1,5 @@
-import { CALENDAR, type GiftImage } from './calendar';
-
-const IMAGES: GiftImage[] = ['gift1', 'gift2', 'gift3', 'gift4', 'gift5'];
+import { CALENDAR } from './calendar';
+import { MOTIF_NAMES } from '../components/atoms/Motif';
 
 test('has exactly 25 entries', () => {
   expect(CALENDAR).toHaveLength(25);
@@ -11,9 +10,9 @@ test('day values are the unique set 1..25', () => {
   expect(days).toEqual(Array.from({ length: 25 }, (_, i) => i + 1));
 });
 
-test('every entry has a known image and non-empty grid areas', () => {
+test('every entry has a known motif and non-empty grid areas', () => {
   for (const d of CALENDAR) {
-    expect(IMAGES).toContain(d.image);
+    expect(MOTIF_NAMES).toContain(d.motif);
     expect(d.gridArea.trim().length).toBeGreaterThan(0);
     expect(d.gridAreaMobile.trim().length).toBeGreaterThan(0);
     expect(d.title.trim().length).toBeGreaterThan(0);

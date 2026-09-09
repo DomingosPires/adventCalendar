@@ -2,6 +2,7 @@ import { useEffect, useRef, type KeyboardEvent, type MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { CopyableCode } from '../../molecules/CopyableCode';
+import { Motif } from '../../atoms/Motif';
 import { doorLayoutId } from '../../molecules/Door/doorLayoutId';
 import type { CalendarDay } from '../../../data/calendar';
 import styles from './DoorFocus.module.css';
@@ -137,7 +138,7 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
         </div>
 
         <motion.div
-          className={`${styles.leaf} ${styles[`img-${day.image}`]}`}
+          className={styles.leaf}
           style={{ transformOrigin: 'left center' }}
           initial={{
             rotateY: reduce ? LEAF_OPEN_DEG : 0,
@@ -151,7 +152,9 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
           }}
           transition={leafTransition}
           aria-hidden="true"
-        />
+        >
+          <Motif name={day.motif} />
+        </motion.div>
 
         <button
           ref={closeRef}

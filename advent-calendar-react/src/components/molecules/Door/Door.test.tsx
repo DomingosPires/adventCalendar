@@ -7,7 +7,7 @@ const day: CalendarDay = {
   title: 'Receita rápida',
   message: 'Chocolate quente.',
   code: 'COZINHA-05',
-  image: 'gift5',
+  motif: 'candle',
   size: '2x1',
   gridArea: '2 / 3 / span 2 / span 1',
   gridAreaMobile: '2 / 3 / span 2 / span 1',

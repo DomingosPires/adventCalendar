@@ -22,7 +22,7 @@ const withCode: CalendarDay = {
   title: 'Código secreto',
   message: 'Guarda o código.',
   code: 'ADVENTO-08',
-  image: 'gift2',
+  motif: 'gift',
   size: '1x1',
   gridArea: '1 / 1 / span 1 / span 1',
   gridAreaMobile: '1 / 1 / span 1 / span 1',

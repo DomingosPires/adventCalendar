@@ -58,11 +58,12 @@
   box-shadow: var(--shadow-door);
 }
 
-.img-gift1 { background-image: url('../../../assets/gift1.png'); }
-.img-gift2 { background-image: url('../../../assets/gift2.png'); }
-.img-gift3 { background-image: url('../../../assets/gift3.png'); }
-.img-gift4 { background-image: url('../../../assets/gift4.png'); }
-.img-gift5 { background-image: url('../../../assets/gift5.png'); }
+.leaf .motif {
+  position: absolute;
+  inset: 24%;
+  width: 52%;
+  height: 52%;
+}
 
 .close {
   position: absolute;
