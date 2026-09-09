@@ -1,1 +1,56 @@
-{%- comment -%} filled in a later task {%- endcomment -%}
+{%- comment -%}
+  One advent door. Params: day_entry (advent_calendar_day), current_day (int)
+{%- endcomment -%}
+{%- liquid
+  assign n = day_entry.day.value | plus: 0
+
+  assign area = day_entry.grid_area.value
+  if area == blank
+    capture area
+      render 'advent-grid-defaults', day: n, mode: 'desktop'
+    endcapture
+    assign area = area | strip
+  endif
+
+  assign area_m = day_entry.grid_area_mobile.value
+  if area_m == blank
+    capture area_m
+      render 'advent-grid-defaults', day: n, mode: 'mobile'
+    endcapture
+    assign area_m = area_m | strip
+  endif
+
+  assign state = 'locked'
+  if current_day > 0 and n < current_day
+    assign state = 'past'
+  elsif current_day > 0 and n == current_day
+    assign state = 'today'
+  endif
+
+  assign motif = day_entry.motif.value | default: 'wreath'
+
+  case state
+    when 'today'
+      assign aria = 'Dia ' | append: n | append: ', hoje'
+    when 'past'
+      assign aria = 'Dia ' | append: n | append: ', por abrir'
+    else
+      assign aria = 'Dia ' | append: n | append: ', por abrir mais tarde'
+  endcase
+-%}
+<button
+  type="button"
+  class="advent__door"
+  role="listitem"
+  data-day="{{ n }}"
+  data-state="{{ state }}"
+  aria-label="{{ aria }}"
+  style="--area: {{ area }}; --area-m: {{ area_m }};"
+>
+  <span class="advent__door-face" aria-hidden="true">
+    <span class="advent__door-num">{{ n }}</span>
+    <span class="advent__door-motif">{%- render 'advent-motif', name: motif, class: 'advent__motif' -%}</span>
+    <span class="advent__door-check">✓</span>
+  </span>
+  {%- if state == 'today' -%}<span class="advent__door-badge" aria-hidden="true">hoje</span>{%- endif -%}
+</button>
