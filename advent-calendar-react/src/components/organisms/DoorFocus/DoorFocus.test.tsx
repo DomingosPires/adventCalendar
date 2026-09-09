@@ -42,12 +42,12 @@ function mockReducedMotion(matches: boolean) {
 afterEach(() => vi.restoreAllMocks());
 
 test('renders nothing when day is null', () => {
-  render(<DoorFocus day={null} onClose={vi.fn()} />);
+  render(<DoorFocus day={null} originRect={null} onClose={vi.fn()} />);
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });
 
 test('shows the day content and links the title', () => {
-  render(<DoorFocus day={withCode} onClose={vi.fn()} />);
+  render(<DoorFocus day={withCode} originRect={null} onClose={vi.fn()} />);
   const dialog = screen.getByRole('dialog');
   const heading = screen.getByRole('heading', { level: 2 });
   expect(heading).toHaveTextContent('Código secreto');
@@ -56,15 +56,30 @@ test('shows the day content and links the title', () => {
 });
 
 test('renders the promo code only when the day has one', () => {
-  const { rerender } = render(<DoorFocus day={withCode} onClose={vi.fn()} />);
+  const { rerender } = render(<DoorFocus day={withCode} originRect={null} onClose={vi.fn()} />);
   expect(screen.getByText('ADVENTO-08')).toBeInTheDocument();
-  rerender(<DoorFocus day={noCode} onClose={vi.fn()} />);
+  rerender(<DoorFocus day={noCode} originRect={null} onClose={vi.fn()} />);
   expect(screen.queryByText('ADVENTO-08')).not.toBeInTheDocument();
+});
+
+test('accepts an origin rect without crashing', () => {
+  const rect = { top: 10, left: 10, width: 40, height: 40, right: 50, bottom: 50, x: 10, y: 10, toJSON() {} } as DOMRect;
+  render(<DoorFocus day={withCode} originRect={rect} onClose={vi.fn()} />);
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+});
+
+test('a rect origin still renders the code and content', () => {
+  const rect = { top: 0, left: 0, width: 30, height: 30, right: 30, bottom: 30, x: 0, y: 0, toJSON() {} } as DOMRect;
+  const { rerender } = render(<DoorFocus day={withCode} originRect={rect} onClose={vi.fn()} />);
+  expect(screen.getByText('ADVENTO-08')).toBeInTheDocument();
+  rerender(<DoorFocus day={noCode} originRect={rect} onClose={vi.fn()} />);
+  expect(screen.queryByText('ADVENTO-08')).not.toBeInTheDocument();
+  expect(screen.getByRole('dialog')).toHaveAttribute('data-reduced-motion', 'false');
 });
 
 test('close button, scrim press-and-release and Escape all call onClose; card click does not', () => {
   const onClose = vi.fn();
-  render(<DoorFocus day={withCode} onClose={onClose} />);
+  render(<DoorFocus day={withCode} originRect={null} onClose={onClose} />);
   const scrim = screen.getByRole('dialog').parentElement as HTMLElement;
   fireEvent.click(screen.getByRole('button', { name: 'Fechar' }));
   fireEvent.mouseDown(scrim);
@@ -78,7 +93,7 @@ test('close button, scrim press-and-release and Escape all call onClose; card cl
 
 test('a press that starts inside the card and releases on the scrim does not close', () => {
   const onClose = vi.fn();
-  render(<DoorFocus day={withCode} onClose={onClose} />);
+  render(<DoorFocus day={withCode} originRect={null} onClose={onClose} />);
   const dialog = screen.getByRole('dialog');
   const scrim = dialog.parentElement as HTMLElement;
   // Drag: mousedown bubbles from the card, click lands on the scrim.
@@ -88,7 +103,7 @@ test('a press that starts inside the card and releases on the scrim does not clo
 });
 
 test('Tab and Shift+Tab wrap focus inside the dialog', () => {
-  render(<DoorFocus day={withCode} onClose={vi.fn()} />);
+  render(<DoorFocus day={withCode} originRect={null} onClose={vi.fn()} />);
   const dialog = screen.getByRole('dialog');
   const focusables = dialog.querySelectorAll<HTMLElement>(
     'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])',
@@ -131,19 +146,19 @@ test('moves focus to the close button and restores it on close', async () => {
   trigger.focus();
   expect(trigger).toHaveFocus();
 
-  const { rerender } = render(<DoorFocus day={withCode} onClose={vi.fn()} />);
+  const { rerender } = render(<DoorFocus day={withCode} originRect={null} onClose={vi.fn()} />);
   expect(screen.getByRole('button', { name: 'Fechar' })).toHaveFocus();
 
-  rerender(<DoorFocus day={null} onClose={vi.fn()} />);
+  rerender(<DoorFocus day={null} originRect={null} onClose={vi.fn()} />);
   await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   expect(trigger).toHaveFocus();
   trigger.remove();
 });
 
 test('locks body scroll while open and restores it after', async () => {
-  const { rerender } = render(<DoorFocus day={withCode} onClose={vi.fn()} />);
+  const { rerender } = render(<DoorFocus day={withCode} originRect={null} onClose={vi.fn()} />);
   expect(document.body.style.overflow).toBe('hidden');
-  rerender(<DoorFocus day={null} onClose={vi.fn()} />);
+  rerender(<DoorFocus day={null} originRect={null} onClose={vi.fn()} />);
   await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   expect(document.body.style.overflow).toBe('');
 });
@@ -151,19 +166,19 @@ test('locks body scroll while open and restores it after', async () => {
 test('under reduced motion it still renders a working dialog on the reduced branch', () => {
   mockReducedMotion(true);
   const onClose = vi.fn();
-  render(<DoorFocus day={noCode} onClose={onClose} />);
+  render(<DoorFocus day={noCode} originRect={null} onClose={onClose} />);
   const dialog = screen.getByRole('dialog');
   expect(dialog).toBeInTheDocument();
-  // Reduced branch: the card takes the crossfade path, so it carries no
-  // shared-layout id and is flagged for the reduced branch.
+  // Reduced branch: the card crossfades in centred, content already visible, and
+  // is flagged for the reduced branch.
   expect(dialog).toHaveAttribute('data-reduced-motion', 'true');
   fireEvent.click(screen.getByRole('button', { name: 'Fechar' }));
   expect(onClose).toHaveBeenCalledTimes(1);
 });
 
-test('with motion allowed the card takes the shared-layout branch', () => {
+test('with motion allowed the card takes the spring-from-rect branch', () => {
   mockReducedMotion(false);
-  render(<DoorFocus day={noCode} onClose={vi.fn()} />);
+  render(<DoorFocus day={noCode} originRect={null} onClose={vi.fn()} />);
   expect(screen.getByRole('dialog')).toHaveAttribute(
     'data-reduced-motion',
     'false',

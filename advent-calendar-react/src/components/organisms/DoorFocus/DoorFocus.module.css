@@ -10,74 +10,115 @@
 
 .card {
   position: relative;
-  width: min(86vw, 420px, 66vh);
-  aspect-ratio: 3 / 4;
-  border-radius: var(--radius);
-  background: var(--color-red);
-  color: var(--color-white);
-  box-shadow: var(--shadow-door);
+  width: min(92vw, 460px);
+  max-height: 88vh;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  color: var(--color-cream);
+  background: var(--glass-solid);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-4);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .card {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(1.2);
+    backdrop-filter: blur(var(--blur-glass)) saturate(1.2);
+  }
+}
+
+.watermark {
+  position: absolute;
+  right: -18%;
+  bottom: -12%;
+  width: 78%;
+  opacity: 0.10;
+  --motif-ink: var(--color-brass);
+  --motif-accent: var(--color-brass);
+}
+.watermark .motif { width: 100%; height: auto; }
+
+.bloom {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(40% 40% at 50% 55%, rgba(255, 207, 135, 0.35), transparent 70%);
+  opacity: 0;
+  animation: bloom 0.9s ease-out 0.35s both;
+  pointer-events: none;
+}
+@keyframes bloom {
+  30% { opacity: 1; }
+  100% { opacity: 0.25; }
 }
 
 .box {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: var(--space-3);
-  padding: var(--space-4);
+  padding: var(--space-5) var(--space-4) var(--space-4);
   text-align: center;
+  max-height: 88vh;
   overflow: auto;
 }
 
-.day {
-  font-family: var(--font-display);
-  font-size: 3rem;
-  margin: 0;
+.medallion {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 35% 30%, #e7c877, var(--color-brass-dim));
+  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.4), 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+/* the DoorNumber inside sits static, centred */
+.medallion :global(.number),
+.medallion .number {
+  position: static;
+  width: auto;
+  height: auto;
+  background: none;
+  box-shadow: none;
+  color: #2b1a10;
+  font-size: 1.6rem;
 }
 
-.title {
-  margin: 0;
-  font-size: 1.4rem;
-}
+.title { margin: 0; font-family: var(--font-display); font-size: 1.5rem; }
+.message { margin: 0; font-size: 1rem; line-height: 1.55; max-width: 34ch; }
 
-.message {
-  margin: 0;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-.leaf {
+.cardLeaf {
   position: absolute;
   inset: 0;
-  border: var(--door-border);
-  border-radius: var(--radius);
-  background-size: cover;
-  background-position: center;
-  box-shadow: var(--shadow-door);
+  z-index: 2;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, var(--surface-2), #1c2c25);
+  box-shadow: var(--bevel-hi), 8px 0 24px rgba(0, 0, 0, 0.5);
 }
-
-.leaf .motif {
-  position: absolute;
-  inset: 24%;
-  width: 52%;
-  height: 52%;
-}
+.cardLeaf .motif { position: absolute; inset: 30%; width: 40%; height: 40%; }
 
 .close {
   position: absolute;
-  top: var(--space-1);
-  right: var(--space-1);
-  width: 32px;
-  height: 32px;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: 3;
+  width: 34px;
+  height: 34px;
   padding: 0;
-  border: 0;
+  border: 1px solid var(--glass-border);
   border-radius: 999px;
-  background: var(--color-white);
-  color: var(--color-red-dark);
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-brass);
   font-size: 1rem;
   line-height: 1;
   cursor: pointer;
-  z-index: 2;
+  transition: transform 0.15s ease;
+}
+.close:hover { transform: scale(1.08); }
+.close:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bloom, .cardLeaf { animation: none; }
 }

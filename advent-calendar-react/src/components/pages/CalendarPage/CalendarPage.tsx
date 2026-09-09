@@ -15,6 +15,7 @@ export function CalendarPage() {
   const today = useAdventDay();
   const { openedDays, markOpened } = useOpenedDays();
   const [openDay, setOpenDay] = useState<number | null>(null);
+  const [origin, setOrigin] = useState<DOMRect | null>(null);
 
   const items = useMemo<CalendarGridItem[]>(
     () =>
@@ -25,13 +26,13 @@ export function CalendarPage() {
     [today, openedDays],
   );
 
-  const handleOpen = (dayNumber: number) => {
+  const handleOpen = (dayNumber: number, rect: DOMRect) => {
     markOpened(dayNumber);
+    setOrigin(rect);
     setOpenDay(dayNumber);
   };
 
-  const openDayData =
-    CALENDAR.find((entry) => entry.day === openDay) ?? null;
+  const openDayData = CALENDAR.find((entry) => entry.day === openDay) ?? null;
 
   return (
     <>
@@ -39,7 +40,11 @@ export function CalendarPage() {
         header={<SiteHeader title={TITLE} subtitle={SUBTITLE} />}
         grid={<CalendarGrid items={items} onOpen={handleOpen} />}
       />
-      <DoorFocus day={openDayData} onClose={() => setOpenDay(null)} />
+      <DoorFocus
+        day={openDayData}
+        originRect={origin}
+        onClose={() => setOpenDay(null)}
+      />
     </>
   );
 }
