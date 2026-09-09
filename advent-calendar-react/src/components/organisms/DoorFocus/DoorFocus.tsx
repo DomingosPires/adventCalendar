@@ -8,7 +8,11 @@ import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { CopyableCode } from '../../molecules/CopyableCode';
 import { Motif } from '../../atoms/Motif';
-import { springSoft, durations } from '../../../lib/motion';
+import { durations } from '../../../lib/motion';
+
+// A gentler, slower settle than the shared springSoft — the card should ease
+// open rather than snap.
+const springOpen = { type: 'spring' as const, stiffness: 140, damping: 24, mass: 1.1 };
 import type { CalendarDay } from '../../../data/calendar';
 import styles from './DoorFocus.module.css';
 
@@ -108,8 +112,8 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
     hidden: {},
     show: {
       transition: {
-        staggerChildren: reduce ? 0 : 0.07,
-        delayChildren: reduce ? 0 : 0.28,
+        staggerChildren: reduce ? 0 : 0.1,
+        delayChildren: reduce ? 0 : 0.42,
       },
     },
   };
@@ -126,7 +130,7 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
         show: {
           opacity: 1,
           scale: 1,
-          transition: { type: 'spring' as const, stiffness: 420, damping: 14 },
+          transition: { type: 'spring' as const, stiffness: 320, damping: 15, delay: 0.1 },
         },
       };
 
@@ -138,7 +142,7 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, pointerEvents: 'none' }}
-      transition={{ duration: reduce ? 0 : durations.base }}
+      transition={{ duration: reduce ? 0 : durations.slow }}
     >
       <motion.div
         ref={cardRef}
@@ -151,7 +155,7 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
           scale: reduce ? 1 : 0.92,
           transition: { duration: durations.fast },
         }}
-        transition={reduce ? { duration: durations.fast } : springSoft}
+        transition={reduce ? { duration: durations.fast } : springOpen}
         role="dialog"
         aria-modal="true"
         aria-labelledby={TITLE_ID}
@@ -193,11 +197,11 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
           className={styles.cardLeaf}
           initial={{ opacity: reduce ? 0 : 1 }}
           animate={{ opacity: 0 }}
-          exit={{ opacity: 1, transition: { duration: reduce ? 0 : 0.16 } }}
+          exit={{ opacity: 1, transition: { duration: reduce ? 0 : 0.2 } }}
           transition={
             reduce
               ? { duration: 0 }
-              : { delay: 0.15, duration: 0.55, ease: 'easeInOut' }
+              : { delay: 0.2, duration: 0.85, ease: 'easeInOut' }
           }
           aria-hidden="true"
         >
@@ -208,7 +212,7 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
               data-shine
               initial={{ x: '-130%' }}
               animate={{ x: '130%' }}
-              transition={{ delay: 0.1, duration: 0.5, ease: 'easeInOut' }}
+              transition={{ delay: 0.15, duration: 0.7, ease: 'easeInOut' }}
             />
           )}
         </motion.div>

@@ -20,7 +20,7 @@
   /* Warm glow ramps in around the whole card once it lands. A box-shadow is
      not clipped by overflow:hidden and always hugs the card's real size. */
   box-shadow: var(--shadow-4), 0 0 0 0 transparent;
-  animation: haloIn 0.7s ease-out 0.4s both;
+  animation: haloIn 1s ease-out 0.55s both;
 }
 @keyframes haloIn {
   to {
