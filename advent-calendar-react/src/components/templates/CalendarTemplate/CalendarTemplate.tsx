@@ -5,10 +5,9 @@ import styles from './CalendarTemplate.module.css';
 export interface CalendarTemplateProps {
   header: ReactNode;
   grid: ReactNode;
-  dialog: ReactNode;
 }
 
-export function CalendarTemplate({ header, grid, dialog }: CalendarTemplateProps) {
+export function CalendarTemplate({ header, grid }: CalendarTemplateProps) {
   return (
     <div className={styles.page}>
       <div className={styles.background} aria-hidden="true" />
@@ -17,7 +16,6 @@ export function CalendarTemplate({ header, grid, dialog }: CalendarTemplateProps
         {header}
         {grid}
       </main>
-      {dialog}
     </div>
   );
 }

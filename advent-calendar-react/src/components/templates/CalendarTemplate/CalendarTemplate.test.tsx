@@ -11,16 +11,14 @@ beforeEach(() => {
 });
 afterEach(() => vi.restoreAllMocks());
 
-test('renders the header, grid and dialog slots plus the snow canvas', () => {
+test('renders the header and grid slots plus the snow canvas', () => {
   const { container } = render(
     <CalendarTemplate
       header={<div data-testid="header" />}
       grid={<div data-testid="grid" />}
-      dialog={<div data-testid="dialog" />}
     />,
   );
   expect(screen.getByTestId('header')).toBeInTheDocument();
   expect(screen.getByTestId('grid')).toBeInTheDocument();
-  expect(screen.getByTestId('dialog')).toBeInTheDocument();
   expect(container.querySelector('canvas')).toBeInTheDocument();
 });

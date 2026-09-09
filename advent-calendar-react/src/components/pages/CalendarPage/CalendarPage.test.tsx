@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { CalendarPage } from './CalendarPage';
 
 const originalSearch = window.location.search;
@@ -27,31 +27,35 @@ test('renders the 25 doors with the header', () => {
   render(<CalendarPage />);
   expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
   expect(screen.getAllByRole('button')).toHaveLength(25);
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });
 
 test('opening today\'s door shows its content and marks it opened', () => {
   setSearch('?day=5');
   render(<CalendarPage />);
-  fireEvent.click(screen.getByRole('button', { name: 'Dia 5, hoje — abrir' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Dia 5, hoje' }));
   const dialog = screen.getByRole('dialog');
   expect(within(dialog).getByRole('heading', { level: 2 })).toHaveTextContent(
     'Receita rápida',
   );
-  expect(screen.getByRole('button', { name: 'Dia 5, aberto' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Dia 5, aberto — ver de novo' }),
+  ).toBeInTheDocument();
 });
 
 test('a locked door does not open the dialog', () => {
   setSearch('?day=5');
   render(<CalendarPage />);
-  fireEvent.click(screen.getByRole('button', { name: 'Dia 20, ainda fechado' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Dia 20, por abrir mais tarde' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });
 
-test('closing the dialog clears the selected day', () => {
+test('closing the overlay clears the open day', async () => {
   setSearch('?day=5');
   render(<CalendarPage />);
-  fireEvent.click(screen.getByRole('button', { name: 'Dia 5, hoje — abrir' }));
-  const dialog = screen.getByRole('dialog');
-  fireEvent.click(within(dialog).getByRole('button', { name: 'Fechar' }));
-  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Dia 5, hoje' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Fechar' }));
+  await waitFor(() =>
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
+  );
 });

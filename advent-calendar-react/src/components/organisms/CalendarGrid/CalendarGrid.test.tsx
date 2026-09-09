@@ -16,7 +16,7 @@ test('renders one door per calendar day', () => {
 test('forwards onOpen with the clicked day number', () => {
   const onOpen = vi.fn();
   render(<CalendarGrid items={items} onOpen={onOpen} />);
-  fireEvent.click(screen.getByRole('button', { name: 'Dia 5, hoje — abrir' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Dia 5, hoje' }));
   expect(onOpen).toHaveBeenCalledWith(5);
 });
 
