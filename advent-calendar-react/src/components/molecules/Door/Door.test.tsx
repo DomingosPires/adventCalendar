@@ -114,6 +114,16 @@ test.each(['locked', 'today', 'past', 'opened'] as const)(
   },
 );
 
+test('the motif svg carries a sizing class from the Door module', () => {
+  // The non-scoped test strategy keeps module class names literal, so a
+  // hardcoded global class on the svg would also pass here — assert the
+  // attribute is merely present and non-empty, which fails if the consumer
+  // forgets to pass one down to Motif.
+  const { container } = render(<Door day={day} state="past" onOpen={vi.fn()} />);
+  const cls = container.querySelector('svg')?.getAttribute('class');
+  expect(cls).toBeTruthy();
+});
+
 test('exposes the grid-area custom properties', () => {
   render(<Door day={day} state="today" onOpen={vi.fn()} />);
   const btn = screen.getByRole('button');

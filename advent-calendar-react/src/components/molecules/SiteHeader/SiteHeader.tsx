@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import styles from './SiteHeader.module.css';
 
 export interface SiteHeaderProps {
@@ -7,12 +7,13 @@ export interface SiteHeaderProps {
 }
 
 export function SiteHeader({ title, subtitle }: SiteHeaderProps) {
+  const reduce = useReducedMotion() ?? false;
   return (
     <motion.header
       className={styles.header}
-      initial={{ opacity: 0, y: -8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      initial={reduce ? false : { opacity: 0, y: -8 }}
+      animate={reduce ? undefined : { opacity: 1, y: 0 }}
+      transition={{ duration: reduce ? 0 : 0.3 }}
     >
       <div className={styles.titleRow}>
         <span className={styles.rule} aria-hidden="true" />

@@ -41,7 +41,7 @@
 .bloom {
   position: absolute;
   inset: -20%;
-  background: radial-gradient(40% 40% at 50% 55%, rgba(255, 207, 135, 0.35), transparent 70%);
+  background: radial-gradient(40% 40% at 50% 55%, color-mix(in srgb, var(--glow-warm) 35%, transparent), transparent 70%);
   opacity: 0;
   animation: bloom 0.9s ease-out 0.35s both;
   pointer-events: none;
@@ -62,6 +62,12 @@
   text-align: center;
   max-height: 88vh;
   overflow: auto;
+  background: radial-gradient(
+    120% 90% at 50% 40%,
+    var(--surface-3) 0%,
+    color-mix(in srgb, var(--surface-3) 55%, transparent) 45%,
+    transparent 80%
+  );
 }
 
 .medallion {
@@ -79,7 +85,7 @@
   font-size: 1.6rem;
   font-weight: 700;
   line-height: 1;
-  color: #2b1a10;
+  color: var(--color-brass-ink);
 }
 
 .title { margin: 0; font-family: var(--font-display); font-size: 1.5rem; }
@@ -117,4 +123,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .bloom, .cardLeaf { animation: none; }
+  .close { transition: none; }
 }

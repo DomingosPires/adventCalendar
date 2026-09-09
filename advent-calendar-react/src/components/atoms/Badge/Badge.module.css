@@ -8,7 +8,7 @@
   letter-spacing: 0.04em;
   padding: 2px 8px;
   border-radius: 999px;
-  color: #2b1a10;
+  color: var(--color-brass-ink);
   background: linear-gradient(180deg, #e7c877, var(--color-brass));
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), var(--glow-today);
   pointer-events: none;

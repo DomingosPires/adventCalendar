@@ -111,15 +111,16 @@ const SHAPES: Record<MotifName, ReactElement> = {
 export interface MotifProps {
   name: MotifName;
   title?: string;
+  className?: string;
 }
 
-export function Motif({ name, title }: MotifProps): ReactElement | null {
+export function Motif({ name, title, className }: MotifProps): ReactElement | null {
   const shape = SHAPES[name];
   if (!shape) return null;
   return (
     <svg
       viewBox="0 0 100 100"
-      className="motif"
+      className={className}
       role="img"
       aria-hidden={title ? undefined : true}
       focusable="false"

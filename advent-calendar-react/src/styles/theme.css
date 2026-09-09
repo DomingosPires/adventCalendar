@@ -2,10 +2,8 @@
   color-scheme: light;
   --bg-page: #17120f;
   --color-red: #b42f25;
-  --color-red-dark: #7d2019;
   --color-cream: #f6ede0;
   --color-white: #ffffff;
-  --color-ink: #2b1a17;
   --radius: 8px;
   --font-display: "Avenir Next", "Segoe UI", system-ui, sans-serif;
   --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -40,6 +38,7 @@
   /* --- accents --- */
   --glow-warm: #ffcf87;
   --color-brass: #c9a24b;
+  --color-brass-ink: #2b1a10;
   --color-brass-dim: #8a6f33;
 
   /* --- motif fills (leaf context defaults; override per context) --- */

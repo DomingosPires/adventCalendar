@@ -94,7 +94,7 @@ export function Door({ day, state, onOpen }: DoorProps) {
           <span className={styles.check} aria-hidden="true">✓</span>
         </span>
         <span className={styles.leaf}>
-          <Motif name={day.motif} />
+          <Motif name={day.motif} className={styles.motif} />
           <DoorNumber value={day.day} size={day.size} />
         </span>
       </span>

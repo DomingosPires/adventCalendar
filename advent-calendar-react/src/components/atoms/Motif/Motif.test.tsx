@@ -28,3 +28,13 @@ test('a title makes it a labelled image', () => {
   expect(svg).toHaveAttribute('role', 'img');
   expect(container.querySelector('title')).toHaveTextContent('estrela');
 });
+
+test('applies the className it is given so a consumer can size it', () => {
+  const { container } = render(<Motif name="star" className="x-test" />);
+  expect(container.querySelector('svg')).toHaveClass('x-test');
+});
+
+test('carries no class attribute when no className is passed', () => {
+  const { container } = render(<Motif name="star" />);
+  expect(container.querySelector('svg')?.hasAttribute('class')).toBe(false);
+});

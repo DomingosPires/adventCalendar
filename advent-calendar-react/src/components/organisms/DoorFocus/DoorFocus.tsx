@@ -145,7 +145,7 @@ function DoorFocusPanel({ day, originRect, onClose }: PanelProps) {
         onKeyDown={trapTab}
       >
         <div className={styles.watermark} aria-hidden="true">
-          <Motif name={day.motif} />
+          <Motif name={day.motif} className={styles.motif} />
         </div>
         <div className={styles.bloom} aria-hidden="true" />
 
@@ -180,7 +180,7 @@ function DoorFocusPanel({ day, originRect, onClose }: PanelProps) {
           transition={reduce ? { duration: 0 } : { delay: 0.35, duration: durations.slow, ease: 'easeInOut' }}
           aria-hidden="true"
         >
-          <Motif name={day.motif} />
+          <Motif name={day.motif} className={styles.motif} />
         </motion.div>
 
         <button
