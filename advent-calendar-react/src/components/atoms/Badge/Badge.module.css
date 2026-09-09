@@ -2,11 +2,14 @@
   position: absolute;
   top: var(--space-1);
   left: var(--space-1);
+  z-index: 4;
   font-size: 0.7rem;
   font-weight: 700;
-  padding: 2px 6px;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
   border-radius: 999px;
-  background: #ffd87a;
-  color: var(--color-ink);
+  color: #2b1a10;
+  background: linear-gradient(180deg, #e7c877, var(--color-brass));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), var(--glow-today);
   pointer-events: none;
 }

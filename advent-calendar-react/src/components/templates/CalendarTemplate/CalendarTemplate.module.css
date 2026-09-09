@@ -7,9 +7,11 @@
 .background {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at 50% 0%, #3a1512, var(--bg-page) 70%),
-    url('../../../assets/background.png') center / cover no-repeat;
   z-index: 0;
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(70, 110, 100, 0.22), transparent 55%),
+    radial-gradient(140% 120% at 50% 120%, rgba(60, 20, 16, 0.5), transparent 60%),
+    radial-gradient(circle at 50% 0%, #241a15, var(--surface-0) 70%);
 }
 
 .content {

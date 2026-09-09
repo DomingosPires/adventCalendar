@@ -6,6 +6,11 @@
   justify-content: center;
 }
 
+.wrap button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
 .code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   border: 1px solid var(--color-brass-dim);
