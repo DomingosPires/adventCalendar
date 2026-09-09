@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { DoorFocus } from './DoorFocus';
 import type { CalendarDay } from '../../../data/calendar';
 
@@ -53,6 +53,8 @@ test('shows the day content and links the title', () => {
   expect(heading).toHaveTextContent('Código secreto');
   expect(dialog).toHaveAttribute('aria-labelledby', heading.id);
   expect(screen.getByText('Guarda o código.')).toBeInTheDocument();
+  // The medallion renders the day numeral directly (self-contained, hashed-build safe).
+  expect(within(dialog).getByText('8')).toBeInTheDocument();
 });
 
 test('renders the promo code only when the day has one', () => {

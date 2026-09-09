@@ -2,7 +2,6 @@ import { useEffect, useRef, type KeyboardEvent, type MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { CopyableCode } from '../../molecules/CopyableCode';
-import { DoorNumber } from '../../atoms/DoorNumber';
 import { Motif } from '../../atoms/Motif';
 import { springSoft, durations } from '../../../lib/motion';
 import type { CalendarDay } from '../../../data/calendar';
@@ -157,7 +156,7 @@ function DoorFocusPanel({ day, originRect, onClose }: PanelProps) {
           animate="show"
         >
           <motion.div className={styles.medallion} variants={itemVariants}>
-            <DoorNumber value={day.day} size={day.size} />
+            <span className={styles.medallionNumber}>{day.day}</span>
           </motion.div>
           <motion.h2 id={TITLE_ID} className={styles.title} variants={itemVariants}>
             {day.title}
