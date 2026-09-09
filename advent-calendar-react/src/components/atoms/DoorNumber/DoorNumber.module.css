@@ -16,6 +16,9 @@
     inset 0 -1px 2px rgba(0, 0, 0, 0.5);
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
   line-height: 1;
+  /* Sits on the frame (a sibling of the leaf) — lift it in the 3D space so it
+     stays above the leaf on hover and remains after an opened leaf fades. */
+  transform: translateZ(10px);
 }
 
 .size-1x1 { font-size: 0.8rem; }

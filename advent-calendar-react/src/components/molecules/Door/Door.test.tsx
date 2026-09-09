@@ -114,6 +114,17 @@ test.each(['locked', 'today', 'past', 'opened'] as const)(
   },
 );
 
+test('the day number lives on the frame, not the leaf, so it survives an opened door', () => {
+  const { container } = render(<Door day={day} state="opened" onOpen={vi.fn()} />);
+  const numberEl = screen.getByText('5');
+  const leaf = container.querySelector('.leaf');
+  const frame = container.querySelector('.frame');
+  expect(leaf).not.toBeNull();
+  expect(frame).not.toBeNull();
+  expect(leaf).not.toContainElement(numberEl);
+  expect(frame).toContainElement(numberEl);
+});
+
 test('the motif svg carries a sizing class from the Door module', () => {
   // The non-scoped test strategy keeps module class names literal, so a
   // hardcoded global class on the svg would also pass here — assert the

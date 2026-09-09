@@ -32,6 +32,12 @@
   transform-style: preserve-3d;
 }
 
+/* An opened door's leaf fades away in place — clip anything mid-fade so it can
+   never spill onto a neighbour. Scoped to .opened so hover tilt is unaffected. */
+.opened .frame {
+  overflow: hidden;
+}
+
 .compartment {
   position: absolute;
   inset: 8%;
@@ -43,6 +49,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.opened .compartment {
+  box-shadow: inset 0 8px 18px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px color-mix(in srgb, var(--color-brass) 22%, transparent);
 }
 
 .check {
@@ -65,7 +76,8 @@
   box-shadow: var(--bevel-hi), var(--shadow-1);
   transform-origin: left center;
   transform-style: preserve-3d;
-  transition: transform 0.35s ease, box-shadow 0.2s ease, filter 0.3s ease;
+  transition: transform 0.35s ease, box-shadow 0.2s ease, filter 0.3s ease,
+    opacity 0.3s ease;
 }
 .leaf::after {
   content: '';
@@ -102,8 +114,10 @@
 }
 
 .opened .leaf {
-  transform: rotateY(-105deg);
-  box-shadow: var(--shadow-contact);
+  opacity: 0;
+  transform: rotateY(-100deg) scale(0.9);
+  box-shadow: none;
+  pointer-events: none;
 }
 
 .shake {
@@ -135,6 +149,7 @@
     transform: none;
   }
   .opened .leaf {
-    transform: rotateY(-105deg);
+    opacity: 0;
+    transform: none;
   }
 }
