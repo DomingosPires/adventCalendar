@@ -4,6 +4,7 @@ import { Badge } from '../../atoms/Badge';
 import { DoorNumber } from '../../atoms/DoorNumber';
 import type { CalendarDay } from '../../../data/calendar';
 import type { DayState } from '../../../lib/dayState';
+import { doorLayoutId } from './doorLayoutId';
 import styles from './Door.module.css';
 
 const ARIA_LABEL: Record<DayState, (n: number) => string> = {
@@ -65,7 +66,7 @@ export function Door({ day, state, onOpen }: DoorProps) {
 
   return (
     <motion.button
-      layoutId={`door-${day.day}`}
+      layoutId={doorLayoutId(day.day)}
       type="button"
       data-state={state}
       aria-label={ARIA_LABEL[state](day.day)}

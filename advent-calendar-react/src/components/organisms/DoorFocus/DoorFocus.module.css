@@ -10,7 +10,7 @@
 
 .card {
   position: relative;
-  width: min(86vw, 420px);
+  width: min(86vw, 420px, 66vh);
   aspect-ratio: 3 / 4;
   border-radius: var(--radius);
   background: var(--color-red);

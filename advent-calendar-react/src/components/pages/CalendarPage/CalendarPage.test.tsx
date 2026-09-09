@@ -10,7 +10,8 @@ function setSearch(search: string) {
 beforeEach(() => {
   window.localStorage.clear();
   vi.spyOn(window, 'matchMedia').mockImplementation((q: string) => ({
-    matches: true, media: q, onchange: null,
+    matches: q.includes('prefers-reduced-motion') ? false : true,
+    media: q, onchange: null,
     addListener: () => {}, removeListener: () => {},
     addEventListener: () => {}, removeEventListener: () => {},
     dispatchEvent: () => false,

@@ -62,16 +62,67 @@ test('renders the promo code only when the day has one', () => {
   expect(screen.queryByText('ADVENTO-08')).not.toBeInTheDocument();
 });
 
-test('close button, scrim click and Escape all call onClose; card click does not', () => {
+test('close button, scrim press-and-release and Escape all call onClose; card click does not', () => {
   const onClose = vi.fn();
   render(<DoorFocus day={withCode} onClose={onClose} />);
+  const scrim = screen.getByRole('dialog').parentElement as HTMLElement;
   fireEvent.click(screen.getByRole('button', { name: 'Fechar' }));
-  fireEvent.click(screen.getByRole('dialog').parentElement as HTMLElement);
+  fireEvent.mouseDown(scrim);
+  fireEvent.click(scrim);
   fireEvent.keyDown(document, { key: 'Escape' });
   expect(onClose).toHaveBeenCalledTimes(3);
   onClose.mockClear();
   fireEvent.click(screen.getByRole('dialog'));
   expect(onClose).not.toHaveBeenCalled();
+});
+
+test('a press that starts inside the card and releases on the scrim does not close', () => {
+  const onClose = vi.fn();
+  render(<DoorFocus day={withCode} onClose={onClose} />);
+  const dialog = screen.getByRole('dialog');
+  const scrim = dialog.parentElement as HTMLElement;
+  // Drag: mousedown bubbles from the card, click lands on the scrim.
+  fireEvent.mouseDown(dialog);
+  fireEvent.click(scrim);
+  expect(onClose).not.toHaveBeenCalled();
+});
+
+test('Tab and Shift+Tab wrap focus inside the dialog', () => {
+  render(<DoorFocus day={withCode} onClose={vi.fn()} />);
+  const dialog = screen.getByRole('dialog');
+  const focusables = dialog.querySelectorAll<HTMLElement>(
+    'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])',
+  );
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  expect(first).not.toBe(last);
+
+  last.focus();
+  fireEvent.keyDown(dialog, { key: 'Tab' });
+  expect(first).toHaveFocus();
+
+  first.focus();
+  fireEvent.keyDown(dialog, { key: 'Tab', shiftKey: true });
+  expect(last).toHaveFocus();
+
+  // Focus drifted outside the card: Tab pulls it back to the first control,
+  // Shift+Tab to the last.
+  last.focus();
+  (document.activeElement as HTMLElement).blur();
+  fireEvent.keyDown(dialog, { key: 'Tab' });
+  expect(first).toHaveFocus();
+  (document.activeElement as HTMLElement).blur();
+  fireEvent.keyDown(dialog, { key: 'Tab', shiftKey: true });
+  expect(last).toHaveFocus();
+
+  // A Tab on the first control (not an edge for forward Tab) is left alone.
+  first.focus();
+  fireEvent.keyDown(dialog, { key: 'Tab' });
+  expect(first).toHaveFocus();
+
+  // A non-Tab key is ignored by the trap.
+  fireEvent.keyDown(dialog, { key: 'a' });
+  expect(first).toHaveFocus();
 });
 
 test('moves focus to the close button and restores it on close', async () => {
@@ -97,11 +148,24 @@ test('locks body scroll while open and restores it after', async () => {
   expect(document.body.style.overflow).toBe('');
 });
 
-test('under reduced motion it still renders a working dialog', () => {
+test('under reduced motion it still renders a working dialog on the reduced branch', () => {
   mockReducedMotion(true);
   const onClose = vi.fn();
   render(<DoorFocus day={noCode} onClose={onClose} />);
-  expect(screen.getByRole('dialog')).toBeInTheDocument();
+  const dialog = screen.getByRole('dialog');
+  expect(dialog).toBeInTheDocument();
+  // Reduced branch: the card takes the crossfade path, so it carries no
+  // shared-layout id and is flagged for the reduced branch.
+  expect(dialog).toHaveAttribute('data-reduced-motion', 'true');
   fireEvent.click(screen.getByRole('button', { name: 'Fechar' }));
   expect(onClose).toHaveBeenCalledTimes(1);
+});
+
+test('with motion allowed the card takes the shared-layout branch', () => {
+  mockReducedMotion(false);
+  render(<DoorFocus day={noCode} onClose={vi.fn()} />);
+  expect(screen.getByRole('dialog')).toHaveAttribute(
+    'data-reduced-motion',
+    'false',
+  );
 });

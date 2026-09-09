@@ -1,12 +1,15 @@
-import { useEffect, useRef, type MouseEvent } from 'react';
+import { useEffect, useRef, type KeyboardEvent, type MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { CopyableCode } from '../../molecules/CopyableCode';
+import { doorLayoutId } from '../../molecules/Door/doorLayoutId';
 import type { CalendarDay } from '../../../data/calendar';
 import styles from './DoorFocus.module.css';
 
 const TITLE_ID = 'door-focus-title';
 const LEAF_OPEN_DEG = -112;
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])';
 
 export interface DoorFocusProps {
   day: CalendarDay | null;
@@ -29,7 +32,9 @@ interface PanelProps {
 function DoorFocusPanel({ day, onClose }: PanelProps) {
   const reduce = useReducedMotion();
   const closeRef = useRef<HTMLButtonElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
+  const pressStartedOnScrim = useRef(false);
 
   useEffect(() => {
     returnFocusRef.current = document.activeElement as HTMLElement | null;
@@ -45,7 +50,7 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
   }, []);
 
   useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
+    const onKey = (event: globalThis.KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', onKey);
@@ -57,6 +62,41 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
 
   const stop = (event: MouseEvent) => event.stopPropagation();
 
+  const trapTab = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== 'Tab') return;
+    const card = cardRef.current;
+    /* v8 ignore next */
+    if (!card) return;
+
+    const focusables = Array.from(
+      card.querySelectorAll<HTMLElement>(FOCUSABLE),
+    );
+    /* v8 ignore next */
+    if (focusables.length === 0) return;
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+    const outside = !card.contains(active);
+
+    if (event.shiftKey && (active === first || outside)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && (active === last || outside)) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
+  const onScrimMouseDown = (event: MouseEvent) => {
+    pressStartedOnScrim.current = event.target === event.currentTarget;
+  };
+
+  const onScrimClick = () => {
+    if (pressStartedOnScrim.current) onClose();
+    pressStartedOnScrim.current = false;
+  };
+
   const leafTransition = reduce
     ? { duration: 0 }
     : { delay: 0.35, duration: 0.5, ease: 'easeInOut' as const };
@@ -64,14 +104,17 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
   return createPortal(
     <motion.div
       className={styles.scrim}
-      onClick={onClose}
+      onMouseDown={onScrimMouseDown}
+      onClick={onScrimClick}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      exit={{ opacity: 0, pointerEvents: 'none' }}
       transition={{ duration: reduce ? 0 : 0.2 }}
     >
       <motion.div
-        layoutId={reduce ? undefined : `door-${day.day}`}
+        ref={cardRef}
+        layoutId={reduce ? undefined : doorLayoutId(day.day)}
+        data-reduced-motion={reduce ? 'true' : 'false'}
         initial={reduce ? { opacity: 0, scale: 0.92 } : false}
         animate={reduce ? { opacity: 1, scale: 1 } : undefined}
         exit={reduce ? { opacity: 0, scale: 0.92 } : { opacity: 0 }}
@@ -82,6 +125,7 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
         aria-modal="true"
         aria-labelledby={TITLE_ID}
         onClick={stop}
+        onKeyDown={trapTab}
       >
         <div className={styles.box}>
           <p className={styles.day}>{day.day}</p>
@@ -95,9 +139,16 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
         <motion.div
           className={`${styles.leaf} ${styles[`img-${day.image}`]}`}
           style={{ transformOrigin: 'left center' }}
-          initial={{ rotateY: reduce ? LEAF_OPEN_DEG : 0 }}
-          animate={{ rotateY: LEAF_OPEN_DEG }}
-          exit={{ rotateY: 0 }}
+          initial={{
+            rotateY: reduce ? LEAF_OPEN_DEG : 0,
+            filter: reduce ? 'brightness(0.45)' : 'brightness(1)',
+          }}
+          animate={{ rotateY: LEAF_OPEN_DEG, filter: 'brightness(0.45)' }}
+          exit={{
+            rotateY: 0,
+            filter: 'brightness(1)',
+            transition: { duration: reduce ? 0 : 0.2, ease: 'easeInOut' },
+          }}
           transition={leafTransition}
           aria-hidden="true"
         />
