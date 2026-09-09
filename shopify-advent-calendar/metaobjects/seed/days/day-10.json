@@ -1,0 +1,12 @@
+{
+  "handle": "advent-day-10",
+  "fields": {
+    "day": "10",
+    "title": "Maratona de leitura",
+    "message": "<p>Escolhe um livro curto e lê-o até ao fim do mês.</p>",
+    "code": "LEITURA-10",
+    "motif": "candle",
+    "grid_area": "5 / 6 / span 1 / span 2",
+    "grid_area_mobile": "9 / 3 / span 1 / span 2"
+  }
+}

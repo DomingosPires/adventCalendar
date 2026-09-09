@@ -1,0 +1,11 @@
+{
+  "handle": "advent-day-21",
+  "fields": {
+    "day": "21",
+    "title": "Solstício de Inverno",
+    "message": "<p>A noite mais longa do ano. A partir de amanhã os dias voltam a crescer.</p>",
+    "motif": "snowflake",
+    "grid_area": "7 / 6 / span 2 / span 2",
+    "grid_area_mobile": "7 / 3 / span 2 / span 2"
+  }
+}

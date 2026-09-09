@@ -1,0 +1,11 @@
+{
+  "handle": "advent-day-18",
+  "fields": {
+    "day": "18",
+    "title": "Arruma um cantinho",
+    "message": "<p>Escolhe uma gaveta e deixa-a melhor do que estava.</p>",
+    "motif": "tree",
+    "grid_area": "3 / 5 / span 1 / span 1",
+    "grid_area_mobile": "14 / 1 / span 1 / span 1"
+  }
+}

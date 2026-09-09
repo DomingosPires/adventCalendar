@@ -1,0 +1,12 @@
+{
+  "handle": "advent-day-22",
+  "fields": {
+    "day": "22",
+    "title": "Embrulha à mão",
+    "message": "<p>Um presente, papel simples, fio de cozinha e um raminho verde.</p>",
+    "code": "PRENDA-22",
+    "motif": "gift",
+    "grid_area": "3 / 1 / span 2 / span 1",
+    "grid_area_mobile": "9 / 2 / span 2 / span 1"
+  }
+}

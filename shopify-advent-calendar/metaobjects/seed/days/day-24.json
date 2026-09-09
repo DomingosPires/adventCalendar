@@ -1,0 +1,12 @@
+{
+  "handle": "advent-day-24",
+  "fields": {
+    "day": "24",
+    "title": "Véspera",
+    "message": "<p>Última porta antes do Natal. Copia o código e respira: chegaste.</p>",
+    "code": "ADVENTO-24",
+    "motif": "candle",
+    "grid_area": "3 / 2 / span 2 / span 1",
+    "grid_area_mobile": "11 / 1 / span 2 / span 1"
+  }
+}

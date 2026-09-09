@@ -1,0 +1,11 @@
+{
+  "handle": "advent-day-19",
+  "fields": {
+    "day": "19",
+    "title": "Elogio anónimo",
+    "message": "<p>Deixa um elogio sincero a alguém, sem assinar.</p>",
+    "motif": "bell",
+    "grid_area": "4 / 5 / span 1 / span 1",
+    "grid_area_mobile": "14 / 2 / span 1 / span 1"
+  }
+}

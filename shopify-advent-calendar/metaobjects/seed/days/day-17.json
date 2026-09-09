@@ -1,0 +1,12 @@
+{
+  "handle": "advent-day-17",
+  "fields": {
+    "day": "17",
+    "title": "Cinema em casa",
+    "message": "<p>Clássico de Natal, luzes apagadas, telemóvel na outra sala.</p>",
+    "code": "FILME-17",
+    "motif": "stocking",
+    "grid_area": "6 / 6 / span 1 / span 2",
+    "grid_area_mobile": "11 / 3 / span 1 / span 2"
+  }
+}
