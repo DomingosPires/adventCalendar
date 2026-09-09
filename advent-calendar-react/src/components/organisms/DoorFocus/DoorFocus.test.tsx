@@ -178,11 +178,39 @@ test('under reduced motion it still renders a working dialog on the reduced bran
   expect(onClose).toHaveBeenCalledTimes(1);
 });
 
-test('with motion allowed the card takes the spring-from-rect branch', () => {
+const rectAt = (left: number, top: number, width: number, height: number): DOMRect =>
+  ({
+    left, top, width, height,
+    right: left + width, bottom: top + height, x: left, y: top,
+    toJSON() {},
+  }) as DOMRect;
+
+test('with motion allowed and an origin rect the card takes the FLIP branch', () => {
+  mockReducedMotion(false);
+  render(<DoorFocus day={noCode} originRect={rectAt(20, 30, 40, 40)} onClose={vi.fn()} />);
+  const dialog = screen.getByRole('dialog');
+  expect(dialog).toHaveAttribute('data-reduced-motion', 'false');
+  expect(dialog).toHaveAttribute('data-open-anim', 'flip');
+});
+
+test('with a null origin rect the card fades in centred, not from a rect', () => {
   mockReducedMotion(false);
   render(<DoorFocus day={noCode} originRect={null} onClose={vi.fn()} />);
-  expect(screen.getByRole('dialog')).toHaveAttribute(
-    'data-reduced-motion',
-    'false',
-  );
+  expect(screen.getByRole('dialog')).toHaveAttribute('data-open-anim', 'fade');
+});
+
+test('reduced motion fades even when an origin rect is given', () => {
+  mockReducedMotion(true);
+  render(<DoorFocus day={noCode} originRect={rectAt(0, 0, 30, 30)} onClose={vi.fn()} />);
+  expect(screen.getByRole('dialog')).toHaveAttribute('data-open-anim', 'fade');
+});
+
+test('measures the card and runs the FLIP without crashing when it has a layout', () => {
+  mockReducedMotion(false);
+  const spy = vi
+    .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+    .mockReturnValue(rectAt(120, 80, 420, 520));
+  render(<DoorFocus day={noCode} originRect={rectAt(10, 10, 42, 52)} onClose={vi.fn()} />);
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+  spy.mockRestore();
 });

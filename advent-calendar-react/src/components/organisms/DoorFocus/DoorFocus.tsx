@@ -1,6 +1,18 @@
-import { useEffect, useRef, type KeyboardEvent, type MouseEvent } from 'react';
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type MouseEvent,
+} from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import {
+  AnimatePresence,
+  motion,
+  useAnimate,
+  useReducedMotion,
+} from 'framer-motion';
 import { CopyableCode } from '../../molecules/CopyableCode';
 import { Motif } from '../../atoms/Motif';
 import { springSoft, durations } from '../../../lib/motion';
@@ -34,12 +46,68 @@ interface PanelProps {
   onClose: () => void;
 }
 
+interface FlipDelta {
+  dx: number;
+  dy: number;
+  sx: number;
+  sy: number;
+}
+
 function DoorFocusPanel({ day, originRect, onClose }: PanelProps) {
   const reduce = useReducedMotion() ?? false;
+  const [scope, rawAnimate] = useAnimate<HTMLDivElement>();
+  // framer's useAnimate overloads don't cleanly accept a transform-keyframes
+  // object literal for a DOM element; narrow it to what we actually call.
+  const animate = rawAnimate as (
+    el: Element,
+    keyframes: Record<string, Array<number | string>>,
+    options?: Record<string, unknown>,
+  ) => void;
   const closeRef = useRef<HTMLButtonElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
   const pressStartedOnScrim = useRef(false);
+  const [flip, setFlip] = useState<FlipDelta | null>(null);
+
+  // FLIP: the card lives at its natural centred layout and never animates its
+  // box (framer can't tween `position`/`width`/`height: auto`). Instead we
+  // measure the settled card, work out the transform that would drop it back
+  // onto the clicked door's rect, and spring from there to identity.
+  const doFlip = !reduce && originRect !== null;
+
+  useLayoutEffect(() => {
+    /* v8 ignore next */
+    if (!doFlip || !scope.current) return;
+    const card = scope.current.getBoundingClientRect();
+    // jsdom (and a not-yet-laid-out card) report zeroes — nothing to measure.
+    if (card.width === 0 || card.height === 0) return;
+    const delta: FlipDelta = {
+      dx:
+        originRect.left +
+        originRect.width / 2 -
+        (card.left + card.width / 2),
+      dy:
+        originRect.top +
+        originRect.height / 2 -
+        (card.top + card.height / 2),
+      sx: originRect.width / card.width,
+      sy: originRect.height / card.height,
+    };
+    setFlip(delta);
+    animate(
+      scope.current,
+      {
+        x: [delta.dx, 0],
+        y: [delta.dy, 0],
+        scaleX: [delta.sx, 1],
+        scaleY: [delta.sy, 1],
+        opacity: [0.35, 1],
+      },
+      // Same feel as springSoft; the mini engine wants a plain options object.
+      { type: 'spring', stiffness: 200, damping: 26 },
+    );
+    // Mount-only: originRect is captured at open time and never changes here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     returnFocusRef.current = document.activeElement as HTMLElement | null;
@@ -64,7 +132,7 @@ function DoorFocusPanel({ day, originRect, onClose }: PanelProps) {
 
   const trapTab = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key !== 'Tab') return;
-    const card = cardRef.current;
+    const card = scope.current;
     /* v8 ignore next */
     if (!card) return;
     const focusables = Array.from(card.querySelectorAll<HTMLElement>(FOCUSABLE));
@@ -92,24 +160,32 @@ function DoorFocusPanel({ day, originRect, onClose }: PanelProps) {
   };
 
   // Card open/close geometry.
-  const cardInitial =
-    reduce || !originRect
-      ? { opacity: 0, scale: 0.94 }
+  // FLIP branch: the imperative animate() above drives the entrance, so the
+  // element takes no declarative initial/animate; on close it recoils toward
+  // the door using the measured delta. Fade branch (reduced motion, or no
+  // origin rect): a plain centred crossfade.
+  const cardInitial = doFlip ? false : { opacity: 0, scale: 0.94 };
+  const cardAnimate = doFlip ? undefined : { opacity: 1, scale: 1 };
+  const cardExit =
+    doFlip && flip
+      ? {
+          opacity: 0,
+          x: flip.dx,
+          y: flip.dy,
+          scaleX: flip.sx,
+          scaleY: flip.sy,
+          transition: { duration: durations.base, ease: 'easeIn' as const },
+        }
       : {
-          opacity: 0.6,
-          position: 'fixed' as const,
-          top: originRect.top,
-          left: originRect.left,
-          width: originRect.width,
-          height: originRect.height,
+          opacity: 0,
+          scale: doFlip ? 1 : 0.94,
+          transition: { duration: durations.fast },
         };
-  const cardAnimate = reduce || !originRect
-    ? { opacity: 1, scale: 1 }
-    : { opacity: 1, position: 'fixed' as const, top: '50%', left: '50%', width: 'min(92vw, 460px)', height: 'auto', x: '-50%', y: '-50%' };
-  const cardExit = reduce
-    ? { opacity: 0, scale: 0.94, transition: { duration: durations.fast } }
-    : { opacity: 0, scale: 0.96, transition: { duration: durations.base } };
-  const cardTransition = reduce ? { duration: durations.fast } : springSoft;
+  const cardTransition = doFlip
+    ? undefined
+    : reduce
+      ? { duration: durations.fast }
+      : springSoft;
 
   const contentVariants = {
     hidden: {},
@@ -130,8 +206,9 @@ function DoorFocusPanel({ day, originRect, onClose }: PanelProps) {
       transition={{ duration: reduce ? 0 : durations.base }}
     >
       <motion.div
-        ref={cardRef}
+        ref={scope}
         data-reduced-motion={reduce ? 'true' : 'false'}
+        data-open-anim={doFlip ? 'flip' : 'fade'}
         className={styles.card}
         style={{ perspective: 1400 }}
         initial={cardInitial}
