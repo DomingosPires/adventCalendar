@@ -1,0 +1,20 @@
+{
+  "type": "advent_calendar",
+  "name": "Advent Calendar",
+  "displayNameKey": "heading",
+  "access": { "storefront": "PUBLIC_READ" },
+  "capabilities": { "publishable": { "enabled": true } },
+  "fieldDefinitions": [
+    { "key": "heading", "name": "Heading", "type": "single_line_text_field", "required": true },
+    { "key": "subheading", "name": "Subheading", "type": "single_line_text_field" },
+    { "key": "background_color", "name": "Background color", "type": "color" },
+    { "key": "text_color", "name": "Text color", "type": "color" },
+    { "key": "door_color", "name": "Door color", "type": "color" },
+    { "key": "door_text_color", "name": "Door text color", "type": "color" },
+    { "key": "accent_color", "name": "Accent color", "type": "color" },
+    { "key": "show_snow", "name": "Show snow", "type": "boolean" },
+    { "key": "start_date", "name": "Start date", "type": "date" },
+    { "key": "days", "name": "Days", "type": "list.metaobject_reference", "required": true,
+      "validations": [ { "name": "metaobject_definition", "value": "@ref:advent_calendar_day" } ] }
+  ]
+}
