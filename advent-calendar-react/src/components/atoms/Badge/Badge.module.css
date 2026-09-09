@@ -6,20 +6,7 @@
   font-weight: 700;
   padding: 2px 6px;
   border-radius: 999px;
-  background: var(--color-white);
-  color: var(--color-red-dark);
-  pointer-events: none;
-}
-
-.today {
   background: #ffd87a;
   color: var(--color-ink);
-}
-
-.available {
-  background: rgba(255, 255, 255, 0.85);
-}
-
-.opened {
-  background: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
 }
