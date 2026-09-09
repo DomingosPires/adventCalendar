@@ -1,6 +1,6 @@
 :root {
   color-scheme: light;
-  --bg-page: #1a0d0b;
+  --bg-page: #17120f;
   --color-red: #b42f25;
   --color-red-dark: #7d2019;
   --color-cream: #f6ede0;
@@ -16,7 +16,44 @@
   --space-3: 16px;
   --space-4: 24px;
   --space-5: 40px;
-  --glow-today: 0 0 0 3px rgba(255, 255, 255, 0.9), 0 0 24px 4px rgba(255, 216, 122, 0.75);
+  --glow-today: 0 0 0 2px var(--color-brass), 0 0 22px 2px rgba(201, 162, 75, 0.55);
+
+  /* --- elevation & surfaces --- */
+  --surface-0: #17120f;
+  --surface-1: #1f2e28;
+  --surface-2: #24382f;
+  --surface-3: #2b1f1a;
+  --bevel-hi: inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    inset 1px 0 0 rgba(255, 255, 255, 0.05);
+  --bevel-lo: inset 0 -2px 5px rgba(0, 0, 0, 0.45),
+    inset -1px 0 0 rgba(0, 0, 0, 0.30);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-2: 0 4px 10px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-3: 0 14px 30px rgba(0, 0, 0, 0.45), 0 4px 8px rgba(0, 0, 0, 0.30);
+  --shadow-4: 0 30px 80px rgba(0, 0, 0, 0.55), 0 8px 20px rgba(0, 0, 0, 0.40);
+  --shadow-contact: 0 2px 6px rgba(0, 0, 0, 0.5);
+
+  /* --- glass --- */
+  --glass-bg: rgba(20, 14, 12, 0.72);
+  --glass-solid: #1a1310; /* @supports-not fallback */
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --blur-glass: 18px;
+
+  /* --- accents --- */
+  --glow-warm: #ffcf87;
+  --color-brass: #c9a24b;
+  --color-brass-dim: #8a6f33;
+
+  /* --- motif fills (leaf context defaults; override per context) --- */
+  --motif-ink: #cfe3d4;
+  --motif-accent: #c9a24b;
+  --motif-hi: rgba(255, 255, 255, 0.5);
+
+  /* --- radii & focus --- */
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+  --focus-ring: 0 0 0 2px var(--surface-0), 0 0 0 4px var(--color-brass);
 }
 
 * { box-sizing: border-box; }
