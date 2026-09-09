@@ -38,6 +38,13 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      returnFocusRef.current?.focus();
+    };
+  }, []);
+
+  useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     };
@@ -45,8 +52,6 @@ function DoorFocusPanel({ day, onClose }: PanelProps) {
 
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = prevOverflow;
-      returnFocusRef.current?.focus();
     };
   }, [onClose]);
 

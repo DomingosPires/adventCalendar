@@ -56,7 +56,6 @@
   background-size: cover;
   background-position: center;
   box-shadow: var(--shadow-door);
-  backface-visibility: hidden;
 }
 
 .img-gift1 { background-image: url('../../../assets/gift1.png'); }
