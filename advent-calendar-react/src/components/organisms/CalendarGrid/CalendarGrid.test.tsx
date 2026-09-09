@@ -24,3 +24,9 @@ test('applies the grid class', () => {
   const { container } = render(<CalendarGrid items={items} onOpen={vi.fn()} />);
   expect(container.firstChild).toHaveClass('grid');
 });
+
+test('the grid is a motion container (has the grid class on its root element)', () => {
+  const { container } = render(<CalendarGrid items={items} onOpen={vi.fn()} />);
+  expect(container.firstChild).toHaveClass('grid');
+  expect((container.firstChild as HTMLElement).tagName).toBe('DIV');
+});

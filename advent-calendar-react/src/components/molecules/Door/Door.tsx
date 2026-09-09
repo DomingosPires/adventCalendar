@@ -5,12 +5,13 @@ import {
   type CSSProperties,
   type MouseEvent,
 } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Badge } from '../../atoms/Badge';
 import { DoorNumber } from '../../atoms/DoorNumber';
 import { Motif } from '../../atoms/Motif';
 import type { CalendarDay } from '../../../data/calendar';
 import type { DayState } from '../../../lib/dayState';
+import { springSnappy } from '../../../lib/motion';
 import styles from './Door.module.css';
 
 const ARIA_LABEL: Record<DayState, (n: number) => string> = {
@@ -20,13 +21,6 @@ const ARIA_LABEL: Record<DayState, (n: number) => string> = {
   opened: (n) => `Dia ${n}, aberto — ver de novo`,
 };
 
-function reducedMotion(): boolean {
-  return (
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  );
-}
-
 export interface DoorProps {
   day: CalendarDay;
   state: DayState;
@@ -34,6 +28,7 @@ export interface DoorProps {
 }
 
 export function Door({ day, state, onOpen }: DoorProps) {
+  const reduce = useReducedMotion() ?? false;
   const [shaking, setShaking] = useState(false);
   const shakeTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
@@ -55,7 +50,7 @@ export function Door({ day, state, onOpen }: DoorProps) {
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (state === 'locked') {
-      if (!reducedMotion()) {
+      if (!reduce) {
         setShaking(true);
         clearShakeTimeout();
         shakeTimeoutRef.current = setTimeout(() => setShaking(false), 600);
@@ -70,9 +65,17 @@ export function Door({ day, state, onOpen }: DoorProps) {
     '--grid-area-mobile': day.gridAreaMobile,
   } as CSSProperties;
 
+  const doorVariants = reduce
+    ? { hidden: { opacity: 1 }, show: { opacity: 1 } }
+    : {
+        hidden: { opacity: 0, y: 12, scale: 0.94 },
+        show: { opacity: 1, y: 0, scale: 1, transition: springSnappy },
+      };
+
   return (
     <motion.button
       type="button"
+      variants={doorVariants}
       data-state={state}
       aria-label={ARIA_LABEL[state](day.day)}
       style={style}

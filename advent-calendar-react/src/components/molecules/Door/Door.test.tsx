@@ -2,6 +2,20 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { Door } from './Door';
 import type { CalendarDay } from '../../../data/calendar';
 
+// framer-motion memoises the reduced-motion preference the first time any
+// component reads it, process-wide, so a per-test `window.matchMedia` spy alone
+// never reaches `useReducedMotion`. Route the hook through matchMedia on every
+// call so `mockReducedMotion` below actually toggles it. `motion` stays real.
+vi.mock('framer-motion', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('framer-motion')>();
+  return {
+    ...actual,
+    useReducedMotion: () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true,
+  };
+});
+
 const day: CalendarDay = {
   day: 5,
   title: 'Receita rápida',
