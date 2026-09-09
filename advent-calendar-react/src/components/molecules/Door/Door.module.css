@@ -7,7 +7,7 @@
   min-width: 0;
   background: transparent;
   cursor: pointer;
-  perspective: 600px;
+  perspective: 700px;
 }
 
 @media (min-width: 769px) {
@@ -16,46 +16,96 @@
   }
 }
 
-.panel {
-  position: absolute;
-  inset: 0;
-  border: var(--door-border);
-  border-radius: var(--radius);
-  background-size: cover;
-  background-position: center;
-  box-shadow: var(--shadow-door);
-  transform-origin: left center;
-  transition: transform 0.5s ease-in-out;
+.door:focus-visible {
+  outline: none;
+}
+.door:focus-visible .frame {
+  box-shadow: var(--shadow-2), var(--focus-ring);
 }
 
-.panel .motif {
+.frame {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+  box-shadow: var(--bevel-hi), var(--bevel-lo), var(--shadow-2);
+  transform-style: preserve-3d;
+}
+
+.compartment {
+  position: absolute;
+  inset: 8%;
+  border-radius: var(--radius-sm);
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(255, 207, 135, 0.28), transparent 70%),
+    #12201b;
+  box-shadow: inset 0 6px 12px rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check {
+  font-size: 1.6rem;
+  color: var(--color-brass);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.opened .check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.leaf {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+  background: linear-gradient(160deg, var(--surface-2), #1c2c25);
+  box-shadow: var(--bevel-hi), var(--shadow-1);
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 0.35s ease, box-shadow 0.2s ease, filter 0.3s ease;
+}
+.leaf::after {
+  content: '';
+  position: absolute;
+  inset: 8%;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+}
+.leaf .motif {
   position: absolute;
   inset: 22%;
   width: 56%;
   height: 56%;
 }
 
-.door[data-state='locked'] .panel { filter: grayscale(0.6) brightness(0.7); }
-
-.door[data-state='today'] .panel { box-shadow: var(--glow-today); }
-.door[data-state='today'] { animation: pulse 2s ease-in-out infinite; }
-
-.door:not([data-state='locked']):not(.ajar):hover .panel,
-.door:not([data-state='locked']):not(.ajar):focus-visible .panel {
-  transform: rotateY(-24deg);
+.door[data-state='locked'] .leaf {
+  filter: grayscale(0.5) brightness(0.6);
 }
 
-.ajar .panel {
-  transform: rotateY(-14deg);
-  filter: brightness(0.9);
+.door[data-state='today'] .frame {
+  box-shadow: var(--bevel-hi), var(--bevel-lo), var(--glow-today);
+}
+.door[data-state='today'] {
+  animation: pulse 2.4s ease-in-out infinite;
 }
 
-.door.ajar:hover .panel,
-.door.ajar:focus-visible .panel {
-  transform: rotateY(-14deg);
+.door:not([data-state='locked']):not(.opened):hover .leaf,
+.door:not([data-state='locked']):not(.opened):focus-visible .leaf {
+  transform: translateZ(8px) rotateY(-18deg);
+  box-shadow: var(--bevel-hi), var(--shadow-3);
 }
 
-.shake { animation: shake 0.5s; }
+.opened .leaf {
+  transform: rotateY(-105deg);
+  box-shadow: var(--shadow-contact);
+}
+
+.shake {
+  animation: shake 0.5s;
+}
 
 @keyframes shake {
   10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -70,12 +120,18 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .panel,
+  .leaf,
+  .check,
   .door[data-state='today'],
   .shake {
     animation: none;
     transition: none;
   }
-  .door:not([data-state='locked']):not(.ajar):hover .panel,
-  .door:not([data-state='locked']):not(.ajar):focus-visible .panel { transform: none; }
+  .door:not([data-state='locked']):not(.opened):hover .leaf,
+  .door:not([data-state='locked']):not(.opened):focus-visible .leaf {
+    transform: none;
+  }
+  .opened .leaf {
+    transform: rotateY(-105deg);
+  }
 }

@@ -13,11 +13,11 @@ test('renders one door per calendar day', () => {
   expect(screen.getAllByRole('button')).toHaveLength(25);
 });
 
-test('forwards onOpen with the clicked day number', () => {
+test('forwards onOpen with the clicked day number and rect', () => {
   const onOpen = vi.fn();
   render(<CalendarGrid items={items} onOpen={onOpen} />);
   fireEvent.click(screen.getByRole('button', { name: 'Dia 5, hoje' }));
-  expect(onOpen).toHaveBeenCalledWith(5);
+  expect(onOpen).toHaveBeenCalledWith(5, expect.objectContaining({ width: expect.any(Number) }));
 });
 
 test('applies the grid class', () => {

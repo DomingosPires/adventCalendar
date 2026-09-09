@@ -10,7 +10,7 @@ export interface CalendarGridItem {
 
 export interface CalendarGridProps {
   items: CalendarGridItem[];
-  onOpen: (day: number) => void;
+  onOpen: (day: number, rect: DOMRect) => void;
 }
 
 export function CalendarGrid({ items, onOpen }: CalendarGridProps) {

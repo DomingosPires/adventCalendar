@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type MouseEvent,
+} from 'react';
 import { motion } from 'framer-motion';
 import { Badge } from '../../atoms/Badge';
 import { DoorNumber } from '../../atoms/DoorNumber';
@@ -25,7 +31,7 @@ function reducedMotion(): boolean {
 export interface DoorProps {
   day: CalendarDay;
   state: DayState;
-  onOpen: (day: number) => void;
+  onOpen: (day: number, rect: DOMRect) => void;
 }
 
 export function Door({ day, state, onOpen }: DoorProps) {
@@ -48,7 +54,7 @@ export function Door({ day, state, onOpen }: DoorProps) {
     setShaking(false);
   };
 
-  const handleClick = () => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     if (state === 'locked') {
       if (!reducedMotion()) {
         setShaking(true);
@@ -57,7 +63,7 @@ export function Door({ day, state, onOpen }: DoorProps) {
       }
       return;
     }
-    onOpen(day.day);
+    onOpen(day.day, event.currentTarget.getBoundingClientRect());
   };
 
   const style = {
@@ -74,7 +80,7 @@ export function Door({ day, state, onOpen }: DoorProps) {
       style={style}
       className={[
         styles.door,
-        state === 'opened' ? styles.ajar : '',
+        state === 'opened' ? styles.opened : '',
         shaking ? styles.shake : '',
       ]
         .filter(Boolean)
@@ -82,10 +88,15 @@ export function Door({ day, state, onOpen }: DoorProps) {
       onClick={handleClick}
       onAnimationEnd={stopShaking}
     >
-      <span className={styles.panel} aria-hidden="true">
-        <Motif name={day.motif} />
+      <span className={styles.frame} aria-hidden="true">
+        <span className={styles.compartment}>
+          <span className={styles.check} aria-hidden="true">✓</span>
+        </span>
+        <span className={styles.leaf}>
+          <Motif name={day.motif} />
+          <DoorNumber value={day.day} size={day.size} />
+        </span>
       </span>
-      <DoorNumber value={day.day} size={day.size} />
       {state === 'today' && <Badge />}
     </motion.button>
   );

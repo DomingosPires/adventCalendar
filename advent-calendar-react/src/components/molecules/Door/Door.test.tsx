@@ -47,11 +47,11 @@ test('only the today state renders a badge', () => {
   expect(screen.queryByText('Hoje')).not.toBeInTheDocument();
 });
 
-test('an opened door carries the ajar class; others do not', () => {
+test('an opened door carries the opened class; others do not', () => {
   const { rerender } = render(<Door day={day} state="opened" onOpen={vi.fn()} />);
-  expect(screen.getByRole('button')).toHaveClass('ajar');
+  expect(screen.getByRole('button')).toHaveClass('opened');
   rerender(<Door day={day} state="past" onOpen={vi.fn()} />);
-  expect(screen.getByRole('button')).not.toHaveClass('ajar');
+  expect(screen.getByRole('button')).not.toHaveClass('opened');
 });
 
 test('clicking a locked door shakes and does not call onOpen', () => {
@@ -75,12 +75,28 @@ test('locked door under reduced motion does not add the shake class', () => {
 });
 
 test.each(['today', 'past', 'opened'] as const)(
-  'clicking a %s door calls onOpen with the day number',
+  'clicking a %s door calls onOpen with the day number and its rect',
   (state) => {
     const onOpen = vi.fn();
     render(<Door day={day} state={state} onOpen={onOpen} />);
     fireEvent.click(screen.getByRole('button'));
-    expect(onOpen).toHaveBeenCalledWith(5);
+    expect(onOpen).toHaveBeenCalledWith(
+      5,
+      expect.objectContaining({
+        top: expect.any(Number),
+        left: expect.any(Number),
+        width: expect.any(Number),
+        height: expect.any(Number),
+      }),
+    );
+  },
+);
+
+test.each(['locked', 'today', 'past', 'opened'] as const)(
+  'the day number is shown on the %s door',
+  (state) => {
+    render(<Door day={day} state={state} onOpen={vi.fn()} />);
+    expect(screen.getByText('5')).toBeInTheDocument();
   },
 );
 
