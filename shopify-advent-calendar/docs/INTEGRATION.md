@@ -361,6 +361,25 @@ different Admin screen). Workflow: edit `grid_area` → return to Customize →
 refresh the preview → read the guides. Section settings (dimensions,
 `layout_guides`, mirrored colours, `preview_day`) hot-reload normally.
 
+### 8.6 All section settings
+
+Set in the theme editor (Customize) on the section itself:
+
+| Group | Setting | Default | Purpose |
+|---|---|---|---|
+| Content | Advent calendar (`calendar_entry`) | — | The `advent_calendar` metaobject entry to render |
+| Content | …or entry handle (`calendar_handle`) | — | Fallback if the picker above is unavailable (section 11) |
+| Layout | Columns (desktop) (`grid_columns`) | `7` | Desktop grid columns (3–12) |
+| Layout | Rows (desktop) (`grid_rows`) | `8` | Desktop grid rows (3–16) |
+| Layout | Columns (mobile) (`grid_columns_mobile`) | `4` | Grid columns at ≤ 700px (2–8) |
+| Layout | Rows (mobile) (`grid_rows_mobile`) | `14` | Grid rows at ≤ 700px (4–30) |
+| Layout | Gap (`grid_gap`) | `8` px | Space between doors (0–24) |
+| Layout | Show layout guides (`layout_guides`) | off | Debug overlay (section 8.5) — turn off in production |
+| Behaviour | Preview day (`preview_day`) | `0` | Force the current day 1–25; `0` = real date |
+| Style overrides | Background / Text / Door / Door text / Accent | — | If set, override the metaobject colour fields (section 9) |
+
+Changing the grid dimensions requires re-balancing the layout — see section 8.3.
+
 ---
 
 ## 9. Colours
