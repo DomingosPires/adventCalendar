@@ -3,7 +3,7 @@
   "fields": {
     "day": "1",
     "title": "Bem-vindo ao Advento",
-    "message": "<p>Vinte e cinco dias, vinte e cinco pequenas surpresas. Volta amanhã para abrir a porta seguinte.</p>",
+    "message": "Vinte e cinco dias, vinte e cinco pequenas surpresas. Volta amanhã para abrir a porta seguinte.",
     "motif": "wreath",
     "grid_area": "1 / 1 / span 2 / span 2",
     "grid_area_mobile": "1 / 1 / span 2 / span 2"

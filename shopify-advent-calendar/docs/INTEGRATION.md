@@ -182,8 +182,10 @@ layout (section 8). Only fill them to override a specific door.
 | 24 | candle | Véspera | ADVENTO-24 | Última porta antes do Natal. Copia o código e respira: chegaste. |
 | 25 | tree | Feliz Natal | ADVENTO-08-12-15-20-24 | Juntaste os códigos secretos. Aqui fica o teu prémio: um dia inteiro sem pressa nenhuma. |
 
-`message` is a rich-text field — plain paragraphs are fine; bold / lists / links
-render as HTML in the overlay.
+`message` is a rich-text field. By hand, just type the text straight into the
+Admin rich-text editor — plain paragraphs are fine; bold / lists / links render
+as HTML in the overlay. (The rich-text AST JSON format is only relevant to
+`npm run seed`, which builds it for you from the plain text in the seed files.)
 
 ### 5.2 The parent entry
 
@@ -434,6 +436,9 @@ the code contract.
 - **The image uses `image_tag`.** The `image` field must point at a real image
   file (a `MediaImage`); a missing or non-image reference simply renders no
   image.
+- **`npm run seed` rich-text format.** The seed script wraps each day's plain-text
+  `message` in the documented Shopify rich-text AST schema
+  (`root` → `paragraph` → `text`). Confirm it against a dev store on the first run.
 - **`localStorage` is per-browser.** Opened doors are remembered per browser
   (key `advent-calendar:opened:{section.id}`), not per logged-in customer — no
   cross-device sync. If `localStorage` throws, an in-memory fallback is used for

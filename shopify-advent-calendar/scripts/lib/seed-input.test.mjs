@@ -11,6 +11,14 @@ test('toUpsertInput shapes a day entry', () => {
   assert.equal(input.metaobject.capabilities.publishable.status, 'ACTIVE');
 });
 
+test('toUpsertInput wraps the message field as rich-text AST JSON', () => {
+  const input = toUpsertInput({ handle: 'advent-day-01', fields: { day: '1', message: 'Hello world.' } }, 'advent_calendar_day');
+  const msg = input.metaobject.fields.find((f) => f.key === 'message');
+  const ast = JSON.parse(msg.value);
+  assert.equal(ast.type, 'root');
+  assert.equal(ast.children[0].children[0].value, 'Hello world.');
+});
+
 test('buildParentFields appends days as a JSON array of GIDs', () => {
   const fields = buildParentFields({ heading: 'H' }, ['gid://shopify/Metaobject/1', 'gid://shopify/Metaobject/2']);
   assert.deepEqual(fields.find((f) => f.key === 'heading'), { key: 'heading', value: 'H' });

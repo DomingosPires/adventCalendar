@@ -3,7 +3,7 @@
   "fields": {
     "day": "6",
     "title": "Pausa de dez minutos",
-    "message": "<p>Fecha os olhos e respira fundo dez vezes. É a tua porta de hoje.</p>",
+    "message": "Fecha os olhos e respira fundo dez vezes. É a tua porta de hoje.",
     "motif": "snowflake",
     "grid_area": "5 / 1 / span 1 / span 2",
     "grid_area_mobile": "6 / 3 / span 1 / span 2"

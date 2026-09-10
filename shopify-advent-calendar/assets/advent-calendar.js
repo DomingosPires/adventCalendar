@@ -26,6 +26,7 @@
       var day = Number(door.dataset.day);
       if ((door.dataset.state === 'past' || door.dataset.state === 'today') && opened.has(day)) {
         door.dataset.state = 'opened';
+        door.setAttribute('aria-label', 'Dia ' + day + ', aberto — ver de novo');
       }
     });
 
@@ -81,6 +82,7 @@
     opened.add(day);
     H.writeOpened(window.localStorage, storageKey, opened);
     door.dataset.state = 'opened';
+    door.setAttribute('aria-label', 'Dia ' + day + ', aberto — ver de novo');
   }
 
   /* -------------------------------------------------------------- overlay -- */
@@ -289,9 +291,9 @@
     var done = function (e) {
       /* transitionend bubbles — only the scrim's own opacity fade counts. */
       if (e && (e.target !== shell.scrim || e.propertyName !== 'opacity')) return;
-      if (st.open) return; /* re-opened while fading out — leave it alone */
       clearTimeout(st.fallback);
       shell.scrim.removeEventListener('transitionend', done);
+      if (st.open) return; /* re-opened while fading out — leave it alone */
       shell.portal.hidden = true;
       clearCard(shell.card, shell.close);
     };

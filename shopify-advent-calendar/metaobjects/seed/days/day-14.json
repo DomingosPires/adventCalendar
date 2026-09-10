@@ -3,7 +3,7 @@
   "fields": {
     "day": "14",
     "title": "Carta ao futuro",
-    "message": "<p>Escreve uma nota para leres no dia 1 de janeiro.</p>",
+    "message": "Escreve uma nota para leres no dia 1 de janeiro.",
     "motif": "snowflake",
     "grid_area": "7 / 3 / span 2 / span 1",
     "grid_area_mobile": "11 / 2 / span 2 / span 1"

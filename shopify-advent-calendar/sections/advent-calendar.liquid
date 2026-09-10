@@ -79,7 +79,7 @@
   {%- if calendar == blank -%}
     <p class="advent__empty">{{ 'sections.advent_calendar.no_entry' | t }}</p>
   {%- else -%}
-    <div class="advent__grid" role="list">
+    <div class="advent__grid">
       {%- assign days = calendar.days.value | sort: 'day' -%}
       {%- for day_entry in days -%}
         {%- render 'advent-door', day_entry: day_entry, current_day: current_day -%}

@@ -3,7 +3,7 @@
   "fields": {
     "day": "25",
     "title": "Feliz Natal",
-    "message": "<p>Juntaste os códigos secretos. Aqui fica o teu prémio: um dia inteiro sem pressa nenhuma.</p>",
+    "message": "Juntaste os códigos secretos. Aqui fica o teu prémio: um dia inteiro sem pressa nenhuma.",
     "code": "ADVENTO-08-12-15-20-24",
     "motif": "tree",
     "grid_area": "4 / 3 / span 2 / span 2",

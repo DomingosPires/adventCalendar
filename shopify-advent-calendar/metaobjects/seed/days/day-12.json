@@ -3,7 +3,7 @@
   "fields": {
     "day": "12",
     "title": "Estrela de papel",
-    "message": "<p>Procura \"estrela de papel 3D\" e faz uma para o topo da árvore.</p>",
+    "message": "Procura \"estrela de papel 3D\" e faz uma para o topo da árvore.",
     "code": "ADVENTO-12",
     "motif": "star",
     "grid_area": "1 / 5 / span 2 / span 1",

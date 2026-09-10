@@ -3,7 +3,7 @@
   "fields": {
     "day": "5",
     "title": "Receita rápida",
-    "message": "<p>Chocolate quente: leite, cacau, um quadrado de chocolate negro e uma pitada de canela.</p>",
+    "message": "Chocolate quente: leite, cacau, um quadrado de chocolate negro e uma pitada de canela.",
     "code": "COZINHA-05",
     "motif": "candle",
     "grid_area": "3 / 3 / span 1 / span 2",

@@ -26,6 +26,12 @@ test('writeOpened serializes and swallows throws', () => {
   assert.doesNotThrow(() => H.writeOpened({ setItem: () => { throw new Error('full'); } }, 'k', new Set([1])));
 });
 
+test('readOpened falls back to the in-memory copy when storage throws', () => {
+  const throwing = { getItem: () => { throw new Error('no'); }, setItem: () => { throw new Error('no'); } };
+  H.writeOpened(throwing, 'fk', new Set([4, 8, 15]));
+  assert.deepEqual([...H.readOpened(throwing, 'fk')].sort((a, b) => a - b), [4, 8, 15]);
+});
+
 test('parseArea', () => {
   assert.deepEqual(H.parseArea('3 / 6 / span 2 / span 2'), { row: 3, col: 6, rowSpan: 2, colSpan: 2 });
   assert.deepEqual(H.parseArea('5 / 5 / span 1 / span 1'), { row: 5, col: 5, rowSpan: 1, colSpan: 1 });

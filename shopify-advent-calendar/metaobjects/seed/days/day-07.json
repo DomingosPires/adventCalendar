@@ -3,7 +3,7 @@
   "fields": {
     "day": "7",
     "title": "Desafio de gratidão",
-    "message": "<p>Escreve três coisas boas que te aconteceram esta semana.</p>",
+    "message": "Escreve três coisas boas que te aconteceram esta semana.",
     "motif": "bauble",
     "grid_area": "6 / 5 / span 1 / span 1",
     "grid_area_mobile": "13 / 4 / span 1 / span 1"

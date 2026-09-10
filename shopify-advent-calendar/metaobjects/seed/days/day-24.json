@@ -3,7 +3,7 @@
   "fields": {
     "day": "24",
     "title": "Véspera",
-    "message": "<p>Última porta antes do Natal. Copia o código e respira: chegaste.</p>",
+    "message": "Última porta antes do Natal. Copia o código e respira: chegaste.",
     "code": "ADVENTO-24",
     "motif": "candle",
     "grid_area": "3 / 2 / span 2 / span 1",

@@ -3,7 +3,7 @@
   "fields": {
     "day": "23",
     "title": "Mesa posta",
-    "message": "<p>Ajuda a preparar a mesa da consoada, nem que seja só a dobrar guardanapos.</p>",
+    "message": "Ajuda a preparar a mesa da consoada, nem que seja só a dobrar guardanapos.",
     "motif": "bell",
     "grid_area": "7 / 4 / span 1 / span 2",
     "grid_area_mobile": "13 / 1 / span 1 / span 2"

@@ -3,7 +3,7 @@
   "fields": {
     "day": "20",
     "title": "Conta uma história",
-    "message": "<p>Pergunta a alguém mais velho como era o Natal quando tinha a tua idade.</p>",
+    "message": "Pergunta a alguém mais velho como era o Natal quando tinha a tua idade.",
     "code": "ADVENTO-20",
     "motif": "stocking",
     "grid_area": "8 / 1 / span 1 / span 2",

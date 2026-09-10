@@ -3,7 +3,7 @@
   "fields": {
     "day": "3",
     "title": "Playlist de Inverno",
-    "message": "<p>Usa o código como nome de uma playlist partilhada e adiciona a primeira música.</p>",
+    "message": "Usa o código como nome de uma playlist partilhada e adiciona a primeira música.",
     "code": "ADVENTO-03",
     "motif": "candycane",
     "grid_area": "1 / 4 / span 2 / span 1",

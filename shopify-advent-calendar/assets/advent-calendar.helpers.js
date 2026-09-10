@@ -1,4 +1,6 @@
 (function (root) {
+  var mem = {};
+
   function parseDayParam(search) {
     var raw = new URLSearchParams(search || '').get('day');
     if (raw === null) return null;
@@ -8,7 +10,7 @@
 
   function readOpened(storage, key) {
     var raw;
-    try { raw = storage.getItem(key); } catch (e) { return new Set(); }
+    try { raw = storage.getItem(key); } catch (e) { return new Set(mem[key] || []); }
     if (!raw) return new Set();
     try {
       var parsed = JSON.parse(raw);
@@ -20,6 +22,7 @@
   }
 
   function writeOpened(storage, key, set) {
+    mem[key] = [].concat(Array.from(set));
     try { storage.setItem(key, JSON.stringify([].concat(Array.from(set)))); } catch (e) { /* ignore */ }
   }
 

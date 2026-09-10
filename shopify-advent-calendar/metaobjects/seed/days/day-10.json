@@ -3,7 +3,7 @@
   "fields": {
     "day": "10",
     "title": "Maratona de leitura",
-    "message": "<p>Escolhe um livro curto e lê-o até ao fim do mês.</p>",
+    "message": "Escolhe um livro curto e lê-o até ao fim do mês.",
     "code": "LEITURA-10",
     "motif": "candle",
     "grid_area": "5 / 6 / span 1 / span 2",

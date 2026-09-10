@@ -7,8 +7,8 @@
   <div class="advent__card-inner">
     <div class="advent__medallion" aria-hidden="true">{{ n }}</div>
     <h3 class="advent__card-title" data-overlay-title>{{ day_entry.title.value }}</h3>
-    {%- if day_entry.image != blank -%}
-      {{ day_entry.image | image_url: width: 720 | image_tag: loading: 'lazy', class: 'advent__card-image', alt: day_entry.title.value }}
+    {%- if day_entry.image.value != blank -%}
+      {{ day_entry.image.value | image_url: width: 720 | image_tag: loading: 'lazy', class: 'advent__card-image', alt: day_entry.title.value }}
     {%- endif -%}
     <div class="advent__card-message">{{ day_entry.message.value }}</div>
     {%- if day_entry.code.value != blank -%}

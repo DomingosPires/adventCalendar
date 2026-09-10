@@ -3,7 +3,7 @@
   "fields": {
     "day": "4",
     "title": "Gesto simples",
-    "message": "<p>Manda mensagem a alguém com quem não falas há algum tempo.</p>",
+    "message": "Manda mensagem a alguém com quem não falas há algum tempo.",
     "motif": "gift",
     "grid_area": "3 / 6 / span 2 / span 2",
     "grid_area_mobile": "7 / 1 / span 2 / span 2"

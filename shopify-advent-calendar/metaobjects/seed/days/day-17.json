@@ -3,7 +3,7 @@
   "fields": {
     "day": "17",
     "title": "Cinema em casa",
-    "message": "<p>Clássico de Natal, luzes apagadas, telemóvel na outra sala.</p>",
+    "message": "Clássico de Natal, luzes apagadas, telemóvel na outra sala.",
     "code": "FILME-17",
     "motif": "stocking",
     "grid_area": "6 / 6 / span 1 / span 2",

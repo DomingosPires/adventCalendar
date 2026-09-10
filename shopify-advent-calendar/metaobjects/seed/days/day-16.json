@@ -3,7 +3,7 @@
   "fields": {
     "day": "16",
     "title": "Caminhada ao frio",
-    "message": "<p>Vinte minutos lá fora, mesmo que esteja cinzento.</p>",
+    "message": "Vinte minutos lá fora, mesmo que esteja cinzento.",
     "motif": "tree",
     "grid_area": "1 / 6 / span 2 / span 2",
     "grid_area_mobile": "3 / 1 / span 2 / span 2"
