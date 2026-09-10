@@ -268,15 +268,17 @@ thing left manual is publishing/previewing the theme. Add these scopes to the
 custom app from section 1: **`read_themes`**, **`write_themes`**, **`write_content`**.
 
 ```sh
-npm run list-themes          # ids + roles; pick an UNPUBLISHED / duplicated one
-npm run push-theme -- --theme <theme-id>
+npm run list-themes                 # ids + roles; pick an UNPUBLISHED / duplicated one
+npm run push-theme -- <theme-id>    # e.g. npm run push-theme -- 190684594466
 npm run create-page
 ```
 
-Theme ids change when a theme is re-duplicated — always re-check with
-`list-themes` before `push-theme`. `push-theme` prints
-`Target theme: <id> — <name> [<role>]` and one `~ <file>` line per upload,
-ending in `Done.`; if the id is wrong it errors and lists the current themes.
+Pass the id as a plain argument after `--` (that survives `npm run … --`
+under PowerShell; `--theme <id>` and `--theme=<id>` also work). Theme ids
+change when a theme is re-duplicated — always re-check with `list-themes`
+first. `push-theme` prints `Target theme: <id> — <name> [<role>]` and one
+`~ <file>` line per upload, ending in `Done.`; if the id is wrong it errors
+and lists the current themes.
 
 `push-theme`:
 

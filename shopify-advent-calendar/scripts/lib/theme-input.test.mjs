@@ -13,9 +13,11 @@ test('normalizeThemeId accepts a number, a numeric string, or a GID', () => {
   assert.throws(() => normalizeThemeId('nope'), /Invalid theme id/);
 });
 
-test('parseArgs reads --theme and --theme=', () => {
+test('parseArgs reads a positional id, --theme, or --theme=', () => {
+  assert.deepEqual(parseArgs(['111']), { theme: 111 });
   assert.deepEqual(parseArgs(['--theme', '111']), { theme: 111 });
   assert.deepEqual(parseArgs(['--theme=gid://shopify/OnlineStoreTheme/222']), { theme: 222 });
+  assert.deepEqual(parseArgs(['--', '333']), { theme: 333 });
   assert.throws(() => parseArgs([]), /Pass the target theme id/);
 });
 

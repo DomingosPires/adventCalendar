@@ -9,17 +9,21 @@ export function normalizeThemeId(input) {
   return Number(m[1]);
 }
 
-/** Parse `--theme <id>` / `--theme=<id>` from argv; throw with guidance if absent. */
+/** Get the target theme id from argv. Accepts a bare positional id
+ *  (`... 12345`), `--theme 12345`, or `--theme=12345`. The positional form
+ *  is the one that survives `npm run … -- …` under PowerShell. */
 export function parseArgs(argv) {
   let theme = null;
   for (let i = 0; i < argv.length; i++) {
-    if (argv[i] === '--theme') { theme = argv[i + 1]; i++; }
-    else if (argv[i].startsWith('--theme=')) { theme = argv[i].slice('--theme='.length); }
+    const a = argv[i];
+    if (a === '--theme') { theme = argv[i + 1]; i++; }
+    else if (a.startsWith('--theme=')) { theme = a.slice('--theme='.length); }
+    else if (theme === null && !a.startsWith('-')) { theme = a; }
   }
   if (!theme) {
     throw new Error(
-      'Pass the target theme id: npm run push-theme -- --theme <id>\n'
-        + 'List ids with: GET /admin/api/2025-01/themes.json\n'
+      'Pass the target theme id:  npm run push-theme -- <theme-id>\n'
+        + 'List ids with:  npm run list-themes\n'
         + 'Use an unpublished / duplicated theme, not the live one.',
     );
   }
