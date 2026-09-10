@@ -569,8 +569,8 @@ the code contract.
   file (a `MediaImage`); a missing or non-image reference simply renders no
   image.
 - **`npm run seed` rich-text format.** The seed script wraps each day's plain-text
-  `message` in the documented Shopify rich-text AST schema
-  (`root` → `paragraph` → `text`). Confirm it against a dev store on the first run.
+  `message` in the Shopify rich-text AST schema (`root` → `paragraph` → `text`).
+  Verified against a live store — `metaobjectUpsert` accepts it for all 25 days.
 - **`localStorage` is per-browser.** Opened doors are remembered per browser
   (key `advent-calendar:opened:{section.id}`), not per logged-in customer — no
   cross-device sync. If `localStorage` throws, an in-memory fallback is used for
