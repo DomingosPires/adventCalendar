@@ -628,3 +628,27 @@ the code contract.
   (key `advent-calendar:opened:{section.id}`), not per logged-in customer — no
   cross-device sync. If `localStorage` throws, an in-memory fallback is used for
   the session.
+
+---
+
+## 13. Troubleshooting
+
+| Symptom | Cause / fix |
+|---|---|
+| Section renders **"Select an Advent calendar entry…"** | The section is not pointing at the parent entry. In the theme editor set **Advent calendar** (or the *…or entry handle* field = `advent-calendar-default`). If you used `push-theme`, that field is `calendar_handle` in `templates/page.advent-calendar.json`. |
+| Section renders **nothing / blank** | Storefront access not enabled on one or both metaobject definitions (§4). Also confirm the parent entry + its 25 days are **Active**, not draft. |
+| Page `/pages/<handle>` shows no section | The theme you're viewing has no `templates/page.advent-calendar.json` (or it's the Shopify-generated default). Run `npm run push-theme -- <theme-id>` against the theme you're previewing. |
+| **All doors locked** in December | Expected before day 1, or if `start_date` is in the future. Use **Preview day** in the section settings to check. |
+| Wrong / missing icon on a door | `motif` must be one of the ten preset choices (§2), lowercase. To add your own: §10. |
+| Doors overlap or leave gaps | A custom `grid_area` broke the tiling. Turn on **Show layout guides**; clear the field to fall back to the default. |
+| Script: **auth error / `401`** | Wrong token, token belongs to another store, or `SHOPIFY_STORE` is wrong (must be the `*.myshopify.com` host, no `https://`). |
+| Script: error naming a field / **"access denied"** for a resource | A scope is missing on the custom app. Add it in **Configuration → Admin API integration**, **Save**, then **update / reinstall** the app. Scopes: `read/write_metaobjects`, `write_metaobject_definitions`, `read_themes`, `write_themes`, `write_content`. See `docs/custom-app.pdf`. |
+| `push-theme`: **"Theme &lt;id&gt; not in this store"** | Theme ids change when a theme is re-duplicated. Run `npm run list-themes` and use the current id. |
+| PowerShell: `--theme` seems ignored | Pass the id as a plain argument: `npm run push-theme -- 190684594466` (also `--theme=<id>`). |
+| `npm run setup` says credentials not found | Create `scripts/.env` (`cp scripts/.env.example scripts/.env`) with `SHOPIFY_STORE` + `SHOPIFY_ADMIN_TOKEN`, or set them as shell env vars. |
+| `npm run seed`: `userErrors` on `message` | The seed sends the rich-text AST JSON; this is expected to work on 2025-01. If your store rejects it, the by-hand path (typing into the Admin rich-text editor) is unaffected. |
+| Theme editor didn't update after a metaobject edit | Metaobjects are a separate Admin screen — go back to Customize and refresh the preview. |
+
+Undo everything a script created: **`npm run teardown`** (removes the page, the
+theme files, and — if you confirm — the metaobject definitions and all their
+entries).

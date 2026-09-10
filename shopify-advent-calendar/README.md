@@ -50,9 +50,13 @@ Provisioning (need `scripts/.env` with a custom-app token — see
 - `npm run setup` — **interactive wizard**: runs the whole install (definitions
   → 25 entries → theme files + template → page → optional publish), prompting
   for theme id, page title/handle and grid.
+- `npm run setup -- --dry-run` — ask everything, print the plan, touch nothing.
 - `npm run create-defs` / `npm run seed` — the two metaobject steps on their own.
 - `npm run list-themes` / `npm run push-theme -- <theme-id>` / `npm run create-page`
   — the theme-files and page steps on their own.
+- `npm run teardown` — **destructive**, interactive: remove the page, the theme
+  files, and/or the metaobject definitions (which deletes all their entries).
+  Each part is opt-in and confirmed by typing.
 
 ## Install / docs
 
@@ -62,7 +66,13 @@ Provisioning (need `scripts/.env` with a custom-app token — see
   an existing theme, plus the API path. Includes the 25 default day entries.
 - **`docs/INTEGRATION.md`** — the full reference: every field, the script/API
   path, the grid-layout system, colour precedence, all section settings, a QA
-  checklist, and known limitations.
+  checklist, §13 troubleshooting, and known limitations.
+- **`CHANGELOG.md`** — notable changes.
 
 The `.pdf` files are tracked; their `.html` sources are not — recover from git
-history (`git log -- docs/<name>.html`) if a PDF needs regenerating.
+history (`git log -- docs/<name>.html`) if a PDF needs regenerating. Drop a
+screenshot at `docs/preview.png` to show the finished calendar.
+
+## Licence
+
+MIT — see `LICENSE`.

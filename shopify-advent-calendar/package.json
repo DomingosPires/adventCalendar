@@ -1,10 +1,12 @@
 {
   "name": "shopify-advent-calendar",
   "private": true,
+  "engines": { "node": ">=18" },
   "scripts": {
     "test": "node --test",
     "check": "npx --yes @shopify/cli@latest theme check || true",
     "setup": "node scripts/setup.mjs",
+    "teardown": "node scripts/teardown.mjs",
     "create-defs": "node scripts/create-definitions.mjs",
     "seed": "node scripts/seed-entries.mjs",
     "list-themes": "node scripts/list-themes.mjs",

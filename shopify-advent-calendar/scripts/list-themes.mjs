@@ -1,7 +1,7 @@
 // Print this store's themes and their ids/roles — pick one for `push-theme`.
 //   npm run list-themes
 
-import { restClient, requireEnv } from './lib/admin.mjs';
+import { restClient, requireEnv, isEntrypoint } from './lib/admin.mjs';
 
 async function main() {
   const { store, token } = requireEnv();
@@ -13,4 +13,6 @@ async function main() {
   console.log('\nUse an unpublished / duplicated theme with:  npm run push-theme -- --theme <id>');
 }
 
-main().catch((err) => { console.error(err.message); process.exit(1); });
+if (isEntrypoint(import.meta.url)) {
+  main().catch((err) => { console.error(err.message); process.exit(1); });
+}
