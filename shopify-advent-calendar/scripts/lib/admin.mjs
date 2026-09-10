@@ -1,8 +1,19 @@
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { readFileSync, realpathSync } from 'node:fs';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const DEFAULT_VERSION = '2025-01';
+
+/** True when the module at `metaUrl` is the script node was invoked with
+ *  (`node scripts/x.mjs`). Lets a file expose `run()` for import AND keep a
+ *  `main()` that only fires when run directly. Cross-platform. */
+export function isEntrypoint(metaUrl) {
+  try {
+    return metaUrl === pathToFileURL(realpathSync(process.argv[1])).href;
+  } catch {
+    return false;
+  }
+}
 
 /** Parse a minimal `.env` (`KEY=VALUE` lines; `#` comments and blanks
  *  ignored; surrounding single/double quotes stripped). Zero-dependency. */

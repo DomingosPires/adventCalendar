@@ -49,20 +49,45 @@ export function mergeLocaleNoEntry(existingText) {
   return JSON.stringify(obj, null, 2);
 }
 
+export const DEFAULT_GRID = { columns: 7, rows: 8, columnsMobile: 4, rowsMobile: 14, gap: 8 };
+
+/** Parse a `cols/rows/mCols/mRows/gap` answer (any part blank/invalid → its default). */
+export function parseGrid(answer) {
+  const n = String(answer).split('/').map((s) => Number.parseInt(s.trim(), 10));
+  const pick = (v, dflt, min) => (Number.isInteger(v) && v >= min ? v : dflt);
+  return {
+    columns: pick(n[0], DEFAULT_GRID.columns, 1),
+    rows: pick(n[1], DEFAULT_GRID.rows, 1),
+    columnsMobile: pick(n[2], DEFAULT_GRID.columnsMobile, 1),
+    rowsMobile: pick(n[3], DEFAULT_GRID.rowsMobile, 1),
+    gap: pick(n[4], DEFAULT_GRID.gap, 0),
+  };
+}
+
+/** URL/handle slug: lowercase, strip accents, non-alphanumerics → single `-`. */
+export function slugify(text) {
+  return String(text)
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'advent-calendar';
+}
+
 /** The `templates/page.advent-calendar.json` body: one advent-calendar section
  *  wired to the metaobject entry via the `calendar_handle` text setting. */
-export function pageTemplate({ handle = 'advent-calendar-default' } = {}) {
+export function pageTemplate({ handle = 'advent-calendar-default', grid = {} } = {}) {
+  const g = { ...DEFAULT_GRID, ...grid };
   return {
     sections: {
       advent_calendar: {
         type: 'advent-calendar',
         settings: {
           calendar_handle: handle,
-          grid_columns: 7,
-          grid_rows: 8,
-          grid_columns_mobile: 4,
-          grid_rows_mobile: 14,
-          grid_gap: 8,
+          grid_columns: g.columns,
+          grid_rows: g.rows,
+          grid_columns_mobile: g.columnsMobile,
+          grid_rows_mobile: g.rowsMobile,
+          grid_gap: g.gap,
           layout_guides: false,
           preview_day: 0,
         },

@@ -1,5 +1,6 @@
 node_modules/
 .env
 
-# Quickstart PDF source — regenerate locally from git history when needed
+# PDF sources — the .pdf is tracked; regenerate the HTML from git history when needed
 docs/quickstart.html
+docs/custom-app.html

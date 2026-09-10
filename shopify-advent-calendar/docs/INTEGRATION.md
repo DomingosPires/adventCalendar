@@ -213,9 +213,16 @@ This is the entry you pick in the section settings (section 7).
 
 ## 6. Script alternative
 
+> **`npm run setup`** — an interactive wizard that does everything in this
+> section (definitions → 25 entries → theme files + template → page → optional
+> publish), asking only for the theme id, page title/handle and grid. It needs
+> the custom app + `scripts/.env` set up first — see **`docs/custom-app.pdf`**.
+> The rest of this section documents the individual commands it wraps.
+
 From `shopify-advent-calendar/` (Node ≥ 18). The scripts need `SHOPIFY_STORE`
 (host only, no `https://`) and `SHOPIFY_ADMIN_TOKEN` (the `shpat_…` from the
-custom app in section 1). Provide them **either** way:
+custom app — **`docs/custom-app.pdf`** walks through creating it and picking the
+scopes). Provide them **either** way:
 
 **A — a `scripts/.env` file** (read automatically; git-ignored):
 

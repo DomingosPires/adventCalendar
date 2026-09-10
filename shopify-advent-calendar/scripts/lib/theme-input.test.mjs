@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   normalizeThemeId, parseArgs, mergeLocaleNoEntry, pageTemplate, pageInput,
+  slugify, parseGrid, DEFAULT_GRID,
 } from './theme-input.mjs';
 
 const NO_ENTRY = 'Select an Advent calendar entry in the section settings.';
@@ -45,7 +46,7 @@ test('mergeLocaleNoEntry treats malformed / non-object input as empty', () => {
     { sections: { advent_calendar: { no_entry: NO_ENTRY } } });
 });
 
-test('pageTemplate wires the section via calendar_handle', () => {
+test('pageTemplate wires the section via calendar_handle and takes a grid', () => {
   const t = pageTemplate();
   assert.deepEqual(t.order, ['advent_calendar']);
   assert.equal(t.sections.advent_calendar.type, 'advent-calendar');
@@ -53,6 +54,24 @@ test('pageTemplate wires the section via calendar_handle', () => {
   assert.equal(t.sections.advent_calendar.settings.grid_columns, 7);
   assert.equal(t.sections.advent_calendar.settings.grid_rows, 8);
   assert.equal(pageTemplate({ handle: 'my-cal' }).sections.advent_calendar.settings.calendar_handle, 'my-cal');
+  const g = pageTemplate({ grid: { columns: 6, gap: 12 } }).sections.advent_calendar.settings;
+  assert.equal(g.grid_columns, 6);
+  assert.equal(g.grid_gap, 12);
+  assert.equal(g.grid_rows, 8); // untouched → default
+});
+
+test('slugify makes a clean handle', () => {
+  assert.equal(slugify('Advent Calendar'), 'advent-calendar');
+  assert.equal(slugify('  Calendário do Advento!! '), 'calendario-do-advento');
+  assert.equal(slugify('---'), 'advent-calendar'); // empty → fallback
+});
+
+test('parseGrid reads a/b/c/d/e, filling blanks with defaults', () => {
+  assert.deepEqual(parseGrid('7/8/4/14/8'), DEFAULT_GRID);
+  assert.deepEqual(parseGrid('6/9'), { ...DEFAULT_GRID, columns: 6, rows: 9 });
+  assert.deepEqual(parseGrid(''), DEFAULT_GRID);
+  assert.deepEqual(parseGrid('x/y/z'), DEFAULT_GRID);
+  assert.equal(parseGrid('7/8/4/14/0').gap, 0);
 });
 
 test('pageInput targets templates/page.advent-calendar.json', () => {

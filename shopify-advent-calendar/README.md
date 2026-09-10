@@ -43,18 +43,26 @@ Run from this directory (`shopify-advent-calendar/`), Node ≥ 18:
   (grid contract, motif keys, 25-day layout table, section settings).
 - `npm run check` — Theme Check (`@shopify/cli theme check`). Expected: 0
   offenses of severity `error`.
-- `npm run create-defs` — create the two metaobject definitions in a store
-  (needs `scripts/.env`; see `docs/INTEGRATION.md` §6).
-- `npm run seed` — upsert the 25 day entries + the parent calendar entry.
 
-## Install
+Provisioning (need `scripts/.env` with a custom-app token — see
+`docs/custom-app.pdf`):
 
-- **`docs/quickstart.pdf`** — a printable step-by-step for adding the calendar
-  to an **existing** theme: upload the files, create the two metaobjects, add
-  the section, sanity-check, publish. Includes the 25 default day entries.
-- **`docs/INTEGRATION.md`** — the full reference: every field and validation,
-  the script path, the grid-layout system, colour precedence, all section
-  settings, a QA checklist, and known limitations.
+- `npm run setup` — **interactive wizard**: runs the whole install (definitions
+  → 25 entries → theme files + template → page → optional publish), prompting
+  for theme id, page title/handle and grid.
+- `npm run create-defs` / `npm run seed` — the two metaobject steps on their own.
+- `npm run list-themes` / `npm run push-theme -- <theme-id>` / `npm run create-page`
+  — the theme-files and page steps on their own.
 
-The quickstart's HTML source is not tracked; recover it from git history
-(`git log -- docs/quickstart.html`) if the PDF needs regenerating.
+## Install / docs
+
+- **`docs/custom-app.pdf`** — create the Shopify custom app + pick the API
+  scopes + put the token in `scripts/.env`. Do this first.
+- **`docs/quickstart.pdf`** — printable step-by-step for a by-hand install into
+  an existing theme, plus the API path. Includes the 25 default day entries.
+- **`docs/INTEGRATION.md`** — the full reference: every field, the script/API
+  path, the grid-layout system, colour precedence, all section settings, a QA
+  checklist, and known limitations.
+
+The `.pdf` files are tracked; their `.html` sources are not — recover from git
+history (`git log -- docs/<name>.html`) if a PDF needs regenerating.

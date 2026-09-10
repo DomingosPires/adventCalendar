@@ -4,6 +4,7 @@
   "scripts": {
     "test": "node --test",
     "check": "npx --yes @shopify/cli@latest theme check || true",
+    "setup": "node scripts/setup.mjs",
     "create-defs": "node scripts/create-definitions.mjs",
     "seed": "node scripts/seed-entries.mjs",
     "list-themes": "node scripts/list-themes.mjs",
