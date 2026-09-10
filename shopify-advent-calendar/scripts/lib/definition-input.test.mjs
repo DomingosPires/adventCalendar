@@ -25,7 +25,7 @@ test('resolves @ref: validation values from refIds', () => {
     type: 'advent_calendar', name: 'Advent Calendar',
     fieldDefinitions: [
       { key: 'days', name: 'Days', type: 'list.metaobject_reference', required: true,
-        validations: [{ name: 'metaobject_definition', value: '@ref:advent_calendar_day' }] },
+        validations: [{ name: 'metaobject_definition_id', value: '@ref:advent_calendar_day' }] },
     ],
   };
   const input = toDefinitionInput(cal, { advent_calendar_day: 'gid://shopify/MetaobjectDefinition/99' });
@@ -35,7 +35,7 @@ test('resolves @ref: validation values from refIds', () => {
 test('throws when an @ref cannot be resolved', () => {
   const cal = { type: 'x', name: 'X', fieldDefinitions: [
     { key: 'days', name: 'D', type: 'list.metaobject_reference',
-      validations: [{ name: 'metaobject_definition', value: '@ref:missing' }] },
+      validations: [{ name: 'metaobject_definition_id', value: '@ref:missing' }] },
   ] };
   assert.throws(() => toDefinitionInput(cal, {}), /missing/);
 });

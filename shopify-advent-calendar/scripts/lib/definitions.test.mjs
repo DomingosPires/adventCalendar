@@ -22,6 +22,9 @@ test('calendar definition references the day definition', () => {
   assert.deepEqual(calendar.fieldDefinitions.map((f) => f.key), CALENDAR_FIELD_KEYS);
   const days = calendar.fieldDefinitions.find((f) => f.key === 'days');
   assert.equal(days.type, 'list.metaobject_reference');
+  // Shopify's validation option for a (list.)metaobject_reference is
+  // `metaobject_definition_id`, NOT `metaobject_definition`.
+  assert.equal(days.validations[0].name, 'metaobject_definition_id');
   assert.equal(days.validations[0].value, '@ref:advent_calendar_day');
 });
 

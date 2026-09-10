@@ -25,6 +25,6 @@
     { "key": "show_snow", "name": "Show snow", "type": "boolean" },
     { "key": "start_date", "name": "Start date", "type": "date" },
     { "key": "days", "name": "Days", "type": "list.metaobject_reference", "required": true,
-      "validations": [ { "name": "metaobject_definition", "value": "@ref:advent_calendar_day" } ] }
+      "validations": [ { "name": "metaobject_definition_id", "value": "@ref:advent_calendar_day" } ] }
   ]
 }
