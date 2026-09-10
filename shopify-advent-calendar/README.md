@@ -49,6 +49,12 @@ Run from this directory (`shopify-advent-calendar/`), Node ≥ 18:
 
 ## Install
 
-See **`docs/INTEGRATION.md`** — covers creating the metaobject definitions (by
-hand or via the scripts), seeding the 25 entries, adding the section to a theme,
-the grid-layout system, colour precedence, and a manual QA checklist.
+- **`docs/quickstart.pdf`** (source `docs/quickstart.html`) — a printable
+  step-by-step for adding the calendar to an **existing** theme: upload the
+  files, create the two metaobjects, add the section, sanity-check, publish.
+- **`docs/INTEGRATION.md`** — the full reference: every field and validation,
+  the script path, the grid-layout system, colour precedence, all section
+  settings, a QA checklist, and known limitations.
+
+Regenerate the PDF from the HTML — see the comment at the top of
+`docs/quickstart.html`.

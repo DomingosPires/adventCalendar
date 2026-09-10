@@ -1,0 +1,145 @@
+<!doctype html>
+<!--
+  Advent Calendar — Quickstart (printable)
+  Open in a browser and File → Print → Save as PDF, or regenerate the PDF with:
+    "C:\Program Files\Google\Chrome\Application\chrome.exe" --headless --disable-gpu \
+      --no-pdf-header-footer --print-to-pdf=quickstart.pdf quickstart.html
+  Source of truth for full detail: ./INTEGRATION.md
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Advent Calendar — Quickstart</title>
+<style>
+  :root { --ink:#1c1613; --muted:#5b544e; --line:#d9d2c7; --accent:#b42f25; --code-bg:#f4efe7; }
+  * { box-sizing: border-box; }
+  html { font-family: "Segoe UI", Roboto, -apple-system, system-ui, sans-serif; color: var(--ink); line-height: 1.5; }
+  body { max-width: 46rem; margin: 2.5rem auto; padding: 0 1.5rem; font-size: 10.5pt; }
+  h1 { font-size: 20pt; margin: 0 0 .15rem; }
+  h2 { font-size: 13pt; margin: 1.6rem 0 .5rem; padding-top: .4rem; border-top: 2px solid var(--ink); }
+  h3 { font-size: 11pt; margin: 1rem 0 .35rem; }
+  p, li { margin: .35rem 0; }
+  ol { padding-left: 1.3rem; }
+  ol.steps > li { margin: .55rem 0; }
+  ul { padding-left: 1.2rem; }
+  code { font-family: "Cascadia Mono", Consolas, "SF Mono", monospace; background: var(--code-bg); padding: .05rem .3rem; border-radius: 3px; font-size: 9.2pt; }
+  pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 4px; padding: .6rem .8rem; overflow-x: auto; font-size: 9pt; }
+  pre code { background: none; padding: 0; }
+  table { border-collapse: collapse; width: 100%; margin: .5rem 0; font-size: 9pt; }
+  th, td { border: 1px solid var(--line); padding: .3rem .45rem; text-align: left; vertical-align: top; }
+  th { background: var(--code-bg); }
+  .lead { color: var(--muted); font-size: 10.5pt; margin-top: .2rem; }
+  .note { border-left: 3px solid var(--accent); background: #fbf6ee; padding: .5rem .8rem; margin: .7rem 0; font-size: 9.6pt; }
+  .tag { display: inline-block; font-size: 8pt; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: .05rem .5rem; vertical-align: middle; }
+  footer { margin-top: 2rem; padding-top: .6rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 8.5pt; }
+  h2, h3 { break-after: avoid; }
+  table, pre, .note, ol.steps > li { break-inside: avoid; }
+  @page { size: A4; margin: 16mm 14mm; }
+  @media print { body { margin: 0; max-width: none; } a { color: inherit; text-decoration: none; } }
+</style>
+</head>
+<body>
+
+<h1>Advent Calendar — Quickstart</h1>
+<p class="lead">Add the metaobject-driven advent&nbsp;calendar section to an <strong>existing</strong> Shopify theme. Happy path, by hand in the Admin. Full reference: <code>INTEGRATION.md</code>.</p>
+
+<h2>Before you start</h2>
+<ul>
+  <li>A staff account with access to <strong>Settings&nbsp;→&nbsp;Custom&nbsp;data</strong> (metaobjects) and <strong>Online&nbsp;Store&nbsp;→&nbsp;Themes</strong>.</li>
+  <li>The theme you will edit — duplicate it first (<em>Themes → ⋯ → Duplicate</em>) so you work on a copy, then publish when happy.</li>
+  <li>The <code>shopify-advent-calendar/</code> folder from this project. Only four subfolders go into the theme: <code>sections/</code>, <code>snippets/</code>, <code>assets/</code>, <code>locales/</code>.</li>
+</ul>
+
+<h2>1 · Add the section files to the theme</h2>
+<p><strong>Online Store → Themes → ⋯ → Edit code</strong> on your working copy. Add each file below with <em>Add a new section / snippet / asset</em> and paste its contents from <code>shopify-advent-calendar/&lt;folder&gt;/&lt;file&gt;</code>.</p>
+<table>
+  <tr><th>In the theme</th><th>Files to add</th></tr>
+  <tr><td><code>sections/</code></td><td><code>advent-calendar.liquid</code></td></tr>
+  <tr><td><code>snippets/</code></td><td><code>advent-door.liquid</code>, <code>advent-overlay.liquid</code>, <code>advent-grid-defaults.liquid</code>, <code>advent-motif.liquid</code>, <code>advent-snow.liquid</code></td></tr>
+  <tr><td><code>assets/</code></td><td><code>advent-calendar.css</code>, <code>advent-calendar.helpers.js</code>, <code>advent-calendar.js</code></td></tr>
+  <tr><td><code>locales/</code></td><td><code>en.default.json</code>, <code>en.default.schema.json</code></td></tr>
+</table>
+<div class="note"><strong>Locales:</strong> your theme almost certainly already has <code>en.default.json</code> and <code>en.default.schema.json</code>. Do <em>not</em> overwrite them — open each, and merge in the single key:
+<pre><code>{ "sections": { "advent_calendar": { "no_entry": "Select an Advent calendar entry in the section settings." } } }</code></pre>
+Both files can carry the same key.</div>
+<p><span class="tag">Faster alternative</span> With Shopify CLI: <code>shopify theme push --theme &lt;id&gt; --only "sections/advent-calendar.liquid" --only "snippets/advent-*" --only "assets/advent-calendar.*" --only "locales/*"</code>. Never push the whole folder over a live theme.</p>
+
+<h2>2 · Create metaobject definition — <code>advent_calendar_day</code></h2>
+<p><strong>Settings → Custom data → Metaobjects → Add definition.</strong> Name it <strong>Advent Calendar Day</strong>; confirm the type handle is exactly <code>advent_calendar_day</code>. Add these fields (the key must match exactly):</p>
+<table>
+  <tr><th>Key</th><th>Type</th><th>Required</th><th>Validation</th></tr>
+  <tr><td><code>day</code></td><td>Integer</td><td>Yes</td><td>min 1, max 25</td></tr>
+  <tr><td><code>title</code></td><td>Single line text</td><td>Yes</td><td>—</td></tr>
+  <tr><td><code>message</code></td><td>Rich text</td><td>Yes</td><td>—</td></tr>
+  <tr><td><code>code</code></td><td>Single line text</td><td>No</td><td>—</td></tr>
+  <tr><td><code>motif</code></td><td>Single line text</td><td>No</td><td>Preset choices (10, below)</td></tr>
+  <tr><td><code>image</code></td><td>File</td><td>No</td><td>Images only</td></tr>
+  <tr><td><code>link_url</code></td><td>URL</td><td>No</td><td>—</td></tr>
+  <tr><td><code>link_label</code></td><td>Single line text</td><td>No</td><td>—</td></tr>
+  <tr><td><code>grid_area</code></td><td>Single line text</td><td>No</td><td>— (layout override, step 7)</td></tr>
+  <tr><td><code>grid_area_mobile</code></td><td>Single line text</td><td>No</td><td>—</td></tr>
+</table>
+<p><code>motif</code> preset choices, exactly these ten, in order: <code>wreath</code>, <code>candle</code>, <code>star</code>, <code>gift</code>, <code>tree</code>, <code>bell</code>, <code>snowflake</code>, <code>stocking</code>, <code>bauble</code>, <code>candycane</code>. Empty / unknown falls back to <code>wreath</code>. There is deliberately no <code>size</code> field — a door's size is the two <code>span</code> values inside <code>grid_area</code>.</p>
+
+<h2>3 · Create metaobject definition — <code>advent_calendar</code></h2>
+<p><strong>Add definition</strong> → name <strong>Advent Calendar</strong>, handle <code>advent_calendar</code>.</p>
+<table>
+  <tr><th>Key</th><th>Type</th><th>Required</th><th>Notes / default</th></tr>
+  <tr><td><code>heading</code></td><td>Single line text</td><td>Yes</td><td>—</td></tr>
+  <tr><td><code>subheading</code></td><td>Single line text</td><td>No</td><td>—</td></tr>
+  <tr><td><code>background_color</code></td><td>Color</td><td>No</td><td><code>#1c1613</code></td></tr>
+  <tr><td><code>text_color</code></td><td>Color</td><td>No</td><td><code>#f6ede0</code></td></tr>
+  <tr><td><code>door_color</code></td><td>Color</td><td>No</td><td><code>#2a3d35</code></td></tr>
+  <tr><td><code>door_text_color</code></td><td>Color</td><td>No</td><td><code>#cfe3d4</code></td></tr>
+  <tr><td><code>accent_color</code></td><td>Color</td><td>No</td><td><code>#c9a24b</code></td></tr>
+  <tr><td><code>show_snow</code></td><td>True / false</td><td>No</td><td>default <code>true</code></td></tr>
+  <tr><td><code>start_date</code></td><td>Date</td><td>No</td><td>door N opens on <code>start_date + (N−1)</code> days; empty → day N of December this year</td></tr>
+  <tr><td><code>days</code></td><td>Metaobject list</td><td>Yes</td><td>list of <strong>Advent Calendar Day</strong> entries</td></tr>
+</table>
+<p>For <code>days</code>: add field → <strong>Metaobject</strong> → turn on <em>List of entries</em> → point the reference at the <strong>Advent Calendar Day</strong> definition.</p>
+
+<h2>4 · Turn on storefront access</h2>
+<p>For <strong>both</strong> definitions: open the definition → <strong>Storefront access</strong> (a.k.a. Access → Storefronts) → enable <strong>Web</strong>. Without this the section renders nothing.</p>
+
+<h2>5 · Create the 25 day entries + the parent</h2>
+<ol class="steps">
+  <li><strong>Advent Calendar Day → Add entry</strong>, once per day. Set <code>day</code> to the number, fill <code>title</code>, <code>motif</code>, <code>message</code> (type straight into the rich-text editor — plain paragraphs are fine), and <code>code</code> where wanted. Leave <code>grid_area</code> / <code>grid_area_mobile</code> empty to use the built-in mosaic. Set status <strong>Active</strong>. Content to use: <code>INTEGRATION.md</code> §5.1 (ported from the React version) — or your own.</li>
+  <li><strong>Advent Calendar → Add entry.</strong> Fill <code>heading</code> (+ any colours / <code>show_snow</code> / <code>start_date</code>). In <code>days</code>, add all 25 day entries <strong>in order 1 → 25</strong>. Status <strong>Active</strong>.</li>
+</ol>
+<div class="note"><span class="tag">Script alternative</span> From <code>shopify-advent-calendar/</code> with Node&nbsp;≥&nbsp;18 and a custom app token (<code>write_metaobject_definitions</code>, <code>write_metaobjects</code>, <code>read_metaobjects</code>): <code>cp scripts/.env.example scripts/.env</code>, fill it in, then <code>npm&nbsp;run&nbsp;create-defs</code> and <code>npm&nbsp;run&nbsp;seed</code> — this does steps 2, 3 and 5 for you (still verify step 4). See <code>INTEGRATION.md</code> §6.</div>
+
+<h2>6 · Add the section to the theme</h2>
+<ol class="steps">
+  <li><strong>Online Store → Themes → Customize</strong> on your working copy.</li>
+  <li>Pick a template (or a section group that accepts sections) → <strong>Add section → “Advent calendar”</strong>.</li>
+  <li>In the section settings, under <strong>Content</strong>, set <strong>Advent calendar</strong> to the parent entry from step 5. If the picker is missing on your theme version, use the <em>“…or entry handle”</em> text field and type the entry's handle (e.g. <code>advent-calendar-default</code>).</li>
+  <li><strong>Save.</strong></li>
+</ol>
+
+<h2>7 · Check it, then publish</h2>
+<ul>
+  <li><strong>Preview day</strong> (section setting): set 1–25 to walk the doors through locked → today → past; <code>0</code> = real date.</li>
+  <li><strong><code>?day=13</code></strong> on the preview URL: client-side override to test outside December.</li>
+  <li>Open a door → the overlay animates from it; <kbd>Esc</kbd> / clicking the backdrop closes it; opened doors are remembered per browser.</li>
+  <li><strong>Layout tweaks:</strong> to move or resize a door, set its <code>grid_area</code> to <code>"&lt;row&gt; / &lt;col&gt; / span &lt;height&gt; / span &lt;width&gt;"</code> (1-based; e.g. <code>1 / 5 / span 2 / span 1</code>). Turn on <strong>Show layout guides</strong> in the section settings to see holes / overlaps flagged. Grid size is fixed at 7×8 desktop / 4×14 mobile in the settings; if you change it, re-balance every door. Full table + rules: <code>INTEGRATION.md</code> §8.</li>
+  <li>Colours: the section's <em>Style overrides</em> beat the metaobject colour fields, which beat the built-in defaults. Keep text-on-background and door-text-on-door at WCAG AA.</li>
+  <li>When it looks right: <strong>Themes → ⋯ → Publish</strong> the working copy.</li>
+</ul>
+
+<h2>If something's wrong</h2>
+<table>
+  <tr><th>Symptom</th><th>Check</th></tr>
+  <tr><td>Section shows “Select an Advent calendar entry…”</td><td>Step 6.3 — the <strong>Advent calendar</strong> setting (or handle fallback) is not pointing at the parent entry.</td></tr>
+  <tr><td>Section renders nothing / blank</td><td>Step 4 — storefront access not enabled on one or both definitions. Also confirm the parent entry and its 25 days are <strong>Active</strong>, not draft.</td></tr>
+  <tr><td>All doors locked in December</td><td>Expected before day 1, or if <code>start_date</code> is a future date. Use <strong>Preview day</strong> to check.</td></tr>
+  <tr><td>Wrong icon on a door</td><td><code>motif</code> value must be one of the ten preset choices (step 2), lowercase.</td></tr>
+  <tr><td>Doors overlap / gaps in the grid</td><td>A custom <code>grid_area</code> broke the tiling. Turn on <strong>Show layout guides</strong>; clear the field to fall back to the default.</td></tr>
+  <tr><td>Theme editor didn't update after editing a metaobject</td><td>Metaobjects are a separate Admin screen — go back to Customize and refresh the preview.</td></tr>
+</table>
+
+<footer>
+  Advent Calendar for Shopify · quickstart. Full reference: <code>shopify-advent-calendar/docs/INTEGRATION.md</code>. Regenerate this PDF from <code>quickstart.html</code> (see the comment at the top of that file).
+</footer>
+
+</body>
+</html>
