@@ -49,12 +49,12 @@ Run from this directory (`shopify-advent-calendar/`), Node ≥ 18:
 
 ## Install
 
-- **`docs/quickstart.pdf`** (source `docs/quickstart.html`) — a printable
-  step-by-step for adding the calendar to an **existing** theme: upload the
-  files, create the two metaobjects, add the section, sanity-check, publish.
+- **`docs/quickstart.pdf`** — a printable step-by-step for adding the calendar
+  to an **existing** theme: upload the files, create the two metaobjects, add
+  the section, sanity-check, publish. Includes the 25 default day entries.
 - **`docs/INTEGRATION.md`** — the full reference: every field and validation,
   the script path, the grid-layout system, colour precedence, all section
   settings, a QA checklist, and known limitations.
 
-Regenerate the PDF from the HTML — see the comment at the top of
-`docs/quickstart.html`.
+The quickstart's HTML source is not tracked; recover it from git history
+(`git log -- docs/quickstart.html`) if the PDF needs regenerating.

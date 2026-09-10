@@ -1,2 +1,5 @@
 node_modules/
 .env
+
+# Quickstart PDF source — regenerate locally from git history when needed
+docs/quickstart.html
