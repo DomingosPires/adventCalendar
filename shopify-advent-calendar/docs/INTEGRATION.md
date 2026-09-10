@@ -268,12 +268,15 @@ thing left manual is publishing/previewing the theme. Add these scopes to the
 custom app from section 1: **`read_themes`**, **`write_themes`**, **`write_content`**.
 
 ```sh
-# 1. list your themes, note the id of an UNPUBLISHED / duplicated theme
-#    (GET /admin/api/2025-01/themes.json — or just run push-theme with a bad
-#     id and it prints the list)
+npm run list-themes          # ids + roles; pick an UNPUBLISHED / duplicated one
 npm run push-theme -- --theme <theme-id>
 npm run create-page
 ```
+
+Theme ids change when a theme is re-duplicated — always re-check with
+`list-themes` before `push-theme`. `push-theme` prints
+`Target theme: <id> — <name> [<role>]` and one `~ <file>` line per upload,
+ending in `Done.`; if the id is wrong it errors and lists the current themes.
 
 `push-theme`:
 
