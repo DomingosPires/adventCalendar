@@ -131,9 +131,13 @@ async function main(p) {
   };
 
   let pageUrl = null;
+  let parentEntryId = null;
   if (doDefs) await step('Definições de metaobject', () => runDefs({ client: gql, dir: join(ROOT, 'metaobjects'), log: sub }));
-  if (doSeed) await step('25 entradas + entrada-pai', () => runSeed({ client: gql, dir: join(ROOT, 'metaobjects', 'seed'), log: sub }));
-  if (doTheme) await step('Ficheiros + template no tema', () => runPushTheme({ req, themeId, rootDir: ROOT, calendarHandle, grid, log: sub }));
+  if (doSeed) await step('25 entradas + entrada-pai', async () => {
+    const r = await runSeed({ client: gql, dir: join(ROOT, 'metaobjects', 'seed'), log: sub });
+    parentEntryId = r.parentId;
+  });
+  if (doTheme) await step('Ficheiros + template no tema', () => runPushTheme({ req, themeId, rootDir: ROOT, calendarHandle, calendarEntryId: parentEntryId, grid, log: sub }));
   if (doPage) await step('Página no storefront', async () => {
     const r = await runCreatePage({ req, store, title: pageTitle, handle: pageHandle, log: sub });
     pageUrl = r.url;

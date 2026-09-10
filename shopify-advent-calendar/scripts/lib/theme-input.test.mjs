@@ -58,6 +58,13 @@ test('pageTemplate wires the section via calendar_handle and takes a grid', () =
   assert.equal(g.grid_columns, 6);
   assert.equal(g.grid_gap, 12);
   assert.equal(g.grid_rows, 8); // untouched → default
+  assert.equal('calendar_entry' in g, false); // no entryId → handle only
+});
+
+test('pageTemplate adds calendar_entry when an entry GID is given', () => {
+  const s = pageTemplate({ entryId: 'gid://shopify/Metaobject/293761319202' }).sections.advent_calendar.settings;
+  assert.equal(s.calendar_entry, 'gid://shopify/Metaobject/293761319202');
+  assert.equal(s.calendar_handle, 'advent-calendar-default'); // fallback still present
 });
 
 test('slugify makes a clean handle', () => {

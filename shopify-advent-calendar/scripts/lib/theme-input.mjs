@@ -73,26 +73,25 @@ export function slugify(text) {
     .replace(/^-+|-+$/g, '') || 'advent-calendar';
 }
 
-/** The `templates/page.advent-calendar.json` body: one advent-calendar section
- *  wired to the metaobject entry via the `calendar_handle` text setting. */
-export function pageTemplate({ handle = 'advent-calendar-default', grid = {} } = {}) {
+/** The `templates/page.advent-calendar.json` body: one advent-calendar section.
+ *  Wired to the metaobject entry by GID (`entryId` → `calendar_entry`, the
+ *  reliable path — same as the theme-editor picker) when available, and always
+ *  by `calendar_handle` as a fallback. */
+export function pageTemplate({ handle = 'advent-calendar-default', entryId = null, grid = {} } = {}) {
   const g = { ...DEFAULT_GRID, ...grid };
+  const settings = {
+    calendar_handle: handle,
+    grid_columns: g.columns,
+    grid_rows: g.rows,
+    grid_columns_mobile: g.columnsMobile,
+    grid_rows_mobile: g.rowsMobile,
+    grid_gap: g.gap,
+    layout_guides: false,
+    preview_day: 0,
+  };
+  if (entryId) settings.calendar_entry = entryId;
   return {
-    sections: {
-      advent_calendar: {
-        type: 'advent-calendar',
-        settings: {
-          calendar_handle: handle,
-          grid_columns: g.columns,
-          grid_rows: g.rows,
-          grid_columns_mobile: g.columnsMobile,
-          grid_rows_mobile: g.rowsMobile,
-          grid_gap: g.gap,
-          layout_guides: false,
-          preview_day: 0,
-        },
-      },
-    },
+    sections: { advent_calendar: { type: 'advent-calendar', settings } },
     order: ['advent_calendar'],
   };
 }

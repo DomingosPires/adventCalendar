@@ -29,7 +29,7 @@ const TEMPLATE_KEY = 'templates/page.advent-calendar.json';
  * Upload every advent-calendar file to `themeId`, generate the page template,
  * and merge the locale key. `rootDir` = the `shopify-advent-calendar/` folder.
  */
-export async function run({ req, themeId, rootDir, calendarHandle, grid, log = console.log } = {}) {
+export async function run({ req, themeId, rootDir, calendarHandle, calendarEntryId, grid, log = console.log } = {}) {
   const { themes } = await req('GET', '/themes.json');
   const target = (themes || []).find((t) => t.id === themeId);
   if (!target) {
@@ -47,7 +47,7 @@ export async function run({ req, themeId, rootDir, calendarHandle, grid, log = c
   for (const f of FILES) {
     await put(f, readFileSync(join(rootDir, f), 'utf8'));
   }
-  await put(TEMPLATE_KEY, JSON.stringify(pageTemplate({ handle: calendarHandle, grid }), null, 2));
+  await put(TEMPLATE_KEY, JSON.stringify(pageTemplate({ handle: calendarHandle, entryId: calendarEntryId, grid }), null, 2));
 
   let existing = '';
   try {

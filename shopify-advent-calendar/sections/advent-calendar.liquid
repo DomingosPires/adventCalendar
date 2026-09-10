@@ -1,7 +1,7 @@
 {%- liquid
   assign calendar = section.settings.calendar_entry
   if calendar == blank and section.settings.calendar_handle != blank
-    assign calendar = shop.metaobjects.advent_calendar[section.settings.calendar_handle]
+    assign calendar = shop.metaobjects['advent_calendar'][section.settings.calendar_handle]
   endif
 
   assign max_day = 25
