@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { adminEndpoint, parseGraphQLResponse, createClient } from './admin.mjs';
+import { adminEndpoint, parseGraphQLResponse, createClient, parseDotEnv } from './admin.mjs';
 
 test('adminEndpoint builds the versioned GraphQL URL', () => {
   assert.equal(
@@ -31,6 +31,24 @@ test('parseGraphQLResponse throws on nested userErrors', () => {
     }),
     /taken/,
   );
+});
+
+test('parseDotEnv reads KEY=VALUE, skips comments/blanks, strips quotes', () => {
+  const parsed = parseDotEnv([
+    '# a comment',
+    '',
+    'SHOPIFY_STORE=demo.myshopify.com',
+    '  SHOPIFY_ADMIN_TOKEN = "shpat_abc123"  ',
+    "QUOTED='single'",
+    'not a valid line',
+    'EMPTY=',
+  ].join('\n'));
+  assert.deepEqual(parsed, {
+    SHOPIFY_STORE: 'demo.myshopify.com',
+    SHOPIFY_ADMIN_TOKEN: 'shpat_abc123',
+    QUOTED: 'single',
+    EMPTY: '',
+  });
 });
 
 test('createClient posts and unwraps data', async () => {

@@ -213,14 +213,36 @@ This is the entry you pick in the section settings (section 7).
 
 ## 6. Script alternative
 
-From `shopify-advent-calendar/` (Node ≥ 18):
+From `shopify-advent-calendar/` (Node ≥ 18). The scripts need `SHOPIFY_STORE`
+(host only, no `https://`) and `SHOPIFY_ADMIN_TOKEN` (the `shpat_…` from the
+custom app in section 1). Provide them **either** way:
+
+**A — a `scripts/.env` file** (read automatically; git-ignored):
 
 ```sh
 cp scripts/.env.example scripts/.env
-# edit scripts/.env:
+# then edit scripts/.env:
 #   SHOPIFY_STORE=your-store.myshopify.com
-#   SHOPIFY_ADMIN_TOKEN=shpat_...      (from the custom app, section 1)
+#   SHOPIFY_ADMIN_TOKEN=shpat_...
+```
 
+**B — environment variables** in the shell (real env vars win over `.env`):
+
+```sh
+# bash / zsh
+export SHOPIFY_STORE=your-store.myshopify.com
+export SHOPIFY_ADMIN_TOKEN=shpat_...
+```
+
+```powershell
+# PowerShell
+$env:SHOPIFY_STORE = "your-store.myshopify.com"
+$env:SHOPIFY_ADMIN_TOKEN = "shpat_..."
+```
+
+Then:
+
+```sh
 npm run create-defs   # creates advent_calendar_day, then advent_calendar
 npm run seed          # upserts the 25 day entries + the parent entry
 ```
