@@ -1,0 +1,12 @@
+{
+  "handle": "advent-day-25",
+  "fields": {
+    "day": "25",
+    "title": "Feliz Natal",
+    "message": "Juntaste os códigos secretos. Aqui fica o teu prémio: um dia inteiro sem pressa nenhuma.",
+    "code": "ADVENTO-08-12-15-20-24",
+    "motif": "tree",
+    "grid_area": "4 / 3 / span 2 / span 2",
+    "grid_area_mobile": "3 / 3 / span 2 / span 2"
+  }
+}

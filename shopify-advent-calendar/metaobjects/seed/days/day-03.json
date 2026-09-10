@@ -1,0 +1,12 @@
+{
+  "handle": "advent-day-03",
+  "fields": {
+    "day": "3",
+    "title": "Playlist de Inverno",
+    "message": "Usa o código como nome de uma playlist partilhada e adiciona a primeira música.",
+    "code": "ADVENTO-03",
+    "motif": "candycane",
+    "grid_area": "1 / 4 / span 2 / span 1",
+    "grid_area_mobile": "5 / 2 / span 2 / span 1"
+  }
+}

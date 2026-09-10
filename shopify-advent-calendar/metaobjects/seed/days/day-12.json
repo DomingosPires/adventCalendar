@@ -1,0 +1,12 @@
+{
+  "handle": "advent-day-12",
+  "fields": {
+    "day": "12",
+    "title": "Estrela de papel",
+    "message": "Procura \"estrela de papel 3D\" e faz uma para o topo da árvore.",
+    "code": "ADVENTO-12",
+    "motif": "star",
+    "grid_area": "1 / 5 / span 2 / span 1",
+    "grid_area_mobile": "9 / 1 / span 2 / span 1"
+  }
+}

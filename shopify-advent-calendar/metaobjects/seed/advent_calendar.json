@@ -1,0 +1,13 @@
+{
+  "handle": "advent-calendar-default",
+  "fields": {
+    "heading": "Calendário do Advento",
+    "subheading": "Abre uma porta por dia até ao Natal",
+    "background_color": "#1c1613",
+    "text_color": "#f6ede0",
+    "door_color": "#2a3d35",
+    "door_text_color": "#cfe3d4",
+    "accent_color": "#c9a24b",
+    "show_snow": "true"
+  }
+}

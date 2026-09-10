@@ -1,0 +1,12 @@
+{
+  "handle": "advent-day-08",
+  "fields": {
+    "day": "8",
+    "title": "Código secreto",
+    "message": "Copia o código e guarda-o. No dia 25 vais precisar dele.",
+    "code": "ADVENTO-08",
+    "motif": "gift",
+    "grid_area": "8 / 4 / span 1 / span 1",
+    "grid_area_mobile": "14 / 3 / span 1 / span 1"
+  }
+}

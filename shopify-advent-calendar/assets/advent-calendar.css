@@ -1,0 +1,664 @@
+/* ==========================================================================
+   Advent calendar section
+   --------------------------------------------------------------------------
+   The section wrapper (.advent) carries the theme-editor colours and layout
+   numbers as inline custom properties:
+
+     --advent-bg  --advent-text  --advent-door  --advent-door-text
+     --advent-accent  --advent-cols  --advent-rows  --advent-cols-m
+     --advent-rows-m  --advent-gap
+
+   Everything below is derived from those, so the whole section re-skins from
+   the theme editor with no other change. Defaults are declared on `.advent`
+   purely as a safety net — the inline style always wins over them.
+   ========================================================================== */
+
+.advent {
+  /* --- fallbacks for the inline custom properties --------------------- */
+  --advent-bg: #1c1613;
+  --advent-text: #f6ede0;
+  --advent-door: #2a3d35;
+  --advent-door-text: #cfe3d4;
+  --advent-accent: #c9a24b;
+  --advent-cols: 7;
+  --advent-rows: 8;
+  --advent-cols-m: 4;
+  --advent-rows-m: 14;
+  --advent-gap: 8px;
+
+  /* --- motif SVG fills (advent-motif.liquid paints with these) -------- */
+  --motif-ink: var(--advent-door-text);
+  --motif-accent: var(--advent-accent);
+  --motif-hi: rgba(255, 255, 255, 0.5);
+
+  /* --- derived design tokens ------------------------------------------ */
+  --advent-radius-sm: 6px;
+  --advent-radius: 12px;
+  --advent-radius-lg: 18px;
+  --advent-bevel:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 1px 0 0 rgba(255, 255, 255, 0.09),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.45);
+  --advent-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --advent-shadow-2: 0 4px 10px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --advent-shadow-3: 0 14px 30px rgba(0, 0, 0, 0.45), 0 4px 8px rgba(0, 0, 0, 0.3);
+  --advent-shadow-4: 0 30px 80px rgba(0, 0, 0, 0.55), 0 8px 20px rgba(0, 0, 0, 0.4);
+  --advent-halo: rgba(201, 162, 75, 0.45);
+  --advent-glow: 0 0 0 2px var(--advent-accent), 0 0 18px 1px var(--advent-halo);
+  --advent-glow-soft: 0 0 0 2px var(--advent-accent), 0 0 28px 6px var(--advent-halo);
+
+  position: relative;
+  overflow: hidden;
+  padding: clamp(24px, 5vw, 56px) clamp(16px, 4vw, 40px);
+  background: var(--advent-bg);
+  color: var(--advent-text);
+}
+
+/* The halo tints itself from the merchant's accent where color-mix is
+   available; the rgba() above stays as the fallback everywhere else. */
+@supports (color: color-mix(in srgb, red 50%, transparent)) {
+  .advent {
+    --advent-halo: color-mix(in srgb, var(--advent-accent) 45%, transparent);
+  }
+}
+
+.advent *,
+.advent *::before,
+.advent *::after {
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   Header
+   -------------------------------------------------------------------------- */
+
+.advent__header {
+  position: relative;
+  z-index: 1;
+  max-width: 60ch;
+  margin: 0 auto clamp(16px, 3vw, 32px);
+  text-align: center;
+}
+
+.advent__title {
+  margin: 0 0 0.4em;
+  font-size: clamp(1.5rem, 1.1rem + 1.8vw, 2.4rem);
+  line-height: 1.15;
+}
+
+.advent__subtitle {
+  margin: 0;
+  line-height: 1.55;
+  opacity: 0.8;
+}
+
+.advent__empty {
+  position: relative;
+  z-index: 1;
+  padding: 24px;
+  text-align: center;
+  opacity: 0.75;
+}
+
+/* --------------------------------------------------------------------------
+   Mosaic grid
+   The aspect-ratio keeps a 1x1 door roughly square whatever the column count.
+   -------------------------------------------------------------------------- */
+
+.advent__grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--advent-cols), 1fr);
+  grid-template-rows: repeat(var(--advent-rows), 1fr);
+  gap: var(--advent-gap);
+  aspect-ratio: var(--advent-cols) / var(--advent-rows);
+  width: min(100%, calc(var(--advent-cols) * 7.5rem));
+  margin-inline: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Doors
+   -------------------------------------------------------------------------- */
+
+.advent__door {
+  grid-area: var(--area);
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--advent-radius);
+  background: var(--advent-door);
+  color: var(--advent-door-text);
+  font: inherit;
+  cursor: pointer;
+  box-shadow: var(--advent-bevel), var(--advent-shadow-2);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.advent__door:not([data-state="locked"]):hover {
+  transform: translateY(-2px);
+  box-shadow: var(--advent-bevel), var(--advent-shadow-3);
+}
+
+.advent__door:not([data-state="locked"]):active {
+  transform: translateY(0) scale(0.985);
+  box-shadow: var(--advent-bevel), var(--advent-shadow-1);
+}
+
+.advent__door:focus-visible {
+  outline: 2px solid var(--advent-accent);
+  outline-offset: 3px;
+}
+
+/* The face is the positioning context for the number, motif and check. */
+.advent__door-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.advent__door-face::after {
+  content: "";
+  position: absolute;
+  inset: 8%;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--advent-radius-sm);
+  pointer-events: none;
+}
+
+.advent__door-num {
+  position: absolute;
+  top: 5%;
+  left: 8%;
+  font-size: clamp(0.7rem, 2.2vw, 0.95rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+}
+
+.advent__door-motif {
+  display: block;
+  width: 54%;
+  max-width: 72px;
+}
+
+.advent__motif {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.advent__door-check {
+  display: none;
+  font-size: clamp(1rem, 4vw, 1.7rem);
+  line-height: 1;
+  color: var(--advent-accent);
+}
+
+.advent__door-badge {
+  position: absolute;
+  right: 6%;
+  bottom: 6%;
+  padding: 0.15em 0.5em;
+  border-radius: 999px;
+  background: var(--advent-accent);
+  color: var(--advent-bg);
+  font-size: clamp(0.55rem, 1.6vw, 0.7rem);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  box-shadow: var(--advent-shadow-1);
+  pointer-events: none;
+}
+
+/* --- states --------------------------------------------------------------- */
+
+.advent__door[data-state="locked"] {
+  cursor: default;
+  filter: grayscale(0.45) brightness(0.62);
+  box-shadow: var(--advent-bevel), var(--advent-shadow-1);
+}
+
+.advent__door[data-state="locked"] .advent__door-num {
+  opacity: 0.6;
+}
+
+.advent__door[data-state="past"] {
+  background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.09), rgba(0, 0, 0, 0.14));
+}
+
+.advent__door[data-state="past"] .advent__door-num {
+  opacity: 1;
+}
+
+/* The warm halo breathes on its own; hover keeps the shared lift transform.
+   The box-shadow is left to the animation so the two never fight. */
+.advent__door[data-state="today"] {
+  box-shadow: var(--advent-bevel), var(--advent-shadow-2), var(--advent-glow);
+  animation: advent-halo 2.8s ease-in-out infinite;
+}
+
+.advent__door[data-state="opened"] {
+  filter: brightness(0.82) saturate(0.85);
+  box-shadow: var(--advent-bevel), var(--advent-shadow-1);
+  animation: none;
+}
+
+.advent__door[data-state="opened"] .advent__door-face {
+  background: radial-gradient(120% 90% at 50% 0%, rgba(0, 0, 0, 0.35), transparent 70%);
+  box-shadow: inset 0 6px 14px rgba(0, 0, 0, 0.5);
+}
+
+.advent__door[data-state="opened"] .advent__door-motif {
+  display: none;
+}
+
+.advent__door[data-state="opened"] .advent__door-check {
+  display: block;
+}
+
+/* --- shake (JS adds .advent__door--shake for ~600ms on a locked door) ------ */
+
+.advent__door--shake {
+  animation: advent-shake 0.6s ease-in-out;
+}
+
+@keyframes advent-shake {
+  10%,
+  90% {
+    transform: translateX(-2px) rotate(-0.6deg);
+  }
+  30%,
+  70% {
+    transform: translateX(3px) rotate(0.5deg);
+  }
+  50% {
+    transform: translateX(-3px) rotate(-0.4deg);
+  }
+}
+
+@keyframes advent-halo {
+  50% {
+    box-shadow: var(--advent-bevel), var(--advent-shadow-3), var(--advent-glow-soft);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Snow — one span per flake, spread by --i of --n
+   -------------------------------------------------------------------------- */
+
+.advent__snow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.advent__flake {
+  position: absolute;
+  top: -8%;
+  left: calc(var(--i) / var(--n) * 100%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  opacity: 0;
+  animation: advent-fall linear infinite;
+  animation-duration: calc(9s + (var(--i) / var(--n)) * 7s);
+  animation-delay: calc(var(--i) * -0.43s);
+}
+
+/* Cheap de-patterning so the flakes do not read as a comb. */
+.advent__flake:nth-child(3n) {
+  width: 3px;
+  height: 3px;
+  animation-duration: 15s;
+}
+
+.advent__flake:nth-child(4n + 1) {
+  width: 7px;
+  height: 7px;
+  animation-duration: 11s;
+}
+
+.advent__flake:nth-child(7n) {
+  animation-delay: -6.2s;
+}
+
+@keyframes advent-fall {
+  0% {
+    top: -8%;
+    transform: translateX(0);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateX(-14px);
+  }
+  92% {
+    opacity: 0.85;
+  }
+  100% {
+    top: 104%;
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Overlay — .advent__portal holds a cloned .advent__tpl inside .advent__card
+   The open itself is FLIP-animated from JS; CSS only owns the resting state
+   and the scrim fade.
+   -------------------------------------------------------------------------- */
+
+.advent__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 4vw, 32px);
+  background: rgba(0, 0, 0, 0.58);
+  transition: opacity 0.28s ease;
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .advent__scrim {
+    background: rgba(0, 0, 0, 0.42);
+    -webkit-backdrop-filter: blur(10px) saturate(1.15);
+    backdrop-filter: blur(10px) saturate(1.15);
+  }
+}
+
+.advent__card {
+  position: relative;
+  width: min(100%, 520px);
+  max-height: min(88vh, 780px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--advent-radius-lg);
+  /* A soft sheen off the top edge — the card's only bit of gloss. */
+  background:
+    radial-gradient(130% 90% at 50% -10%, rgba(255, 255, 255, 0.1), transparent 62%),
+    var(--advent-door);
+  color: var(--advent-door-text);
+  box-shadow: var(--advent-shadow-4);
+  transition: box-shadow 0.3s ease;
+}
+
+/* The content, not the card, scrolls — that keeps the watermark parked. */
+.advent__card-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-height: min(88vh, 780px);
+  padding: clamp(24px, 5vw, 40px) clamp(18px, 4vw, 32px) clamp(20px, 4vw, 32px);
+  overflow-y: auto;
+  text-align: center;
+}
+
+.advent__card-watermark {
+  position: absolute;
+  right: -14%;
+  bottom: -12%;
+  width: 72%;
+  opacity: 0.1;
+  pointer-events: none;
+  --motif-ink: var(--advent-accent);
+  --motif-accent: var(--advent-accent);
+  --motif-hi: transparent;
+}
+
+.advent__medallion {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: var(--advent-accent);
+  color: var(--advent-bg);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.35), 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.advent__card-title {
+  margin: 0;
+  font-size: clamp(1.15rem, 1rem + 1vw, 1.5rem);
+  line-height: 1.25;
+}
+
+.advent__card-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--advent-radius);
+  box-shadow: var(--advent-shadow-2);
+}
+
+.advent__card-message {
+  max-width: 38ch;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.advent__card-message p {
+  margin: 0 0 0.75em;
+}
+
+.advent__card-message p:last-child {
+  margin-bottom: 0;
+}
+
+.advent__card-message ul {
+  margin: 0.5em 0;
+  padding-left: 1.25em;
+  text-align: left;
+}
+
+.advent__card-message a {
+  color: var(--advent-accent);
+  text-underline-offset: 2px;
+}
+
+.advent__code {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px dashed var(--advent-accent);
+  border-radius: var(--advent-radius);
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.advent__code:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.advent__code:active {
+  transform: scale(0.98);
+}
+
+.advent__code:focus-visible {
+  outline: 2px solid var(--advent-accent);
+  outline-offset: 3px;
+}
+
+.advent__code-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.advent__code-hint {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+.advent__cta {
+  display: inline-block;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: var(--advent-accent);
+  color: var(--advent-bg);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  box-shadow: var(--advent-shadow-2);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.advent__cta:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+.advent__cta:focus-visible {
+  outline: 2px solid var(--advent-accent);
+  outline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   Layout guides — injected by JS when the section has data-guides="true"
+   -------------------------------------------------------------------------- */
+
+.advent__guide {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--advent-cols), 1fr);
+  grid-template-rows: repeat(var(--advent-rows), 1fr);
+  gap: var(--advent-gap);
+  pointer-events: none;
+}
+
+.advent__guide-cell {
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+}
+
+.advent__guide-cell--empty {
+  border: 1px dashed #f0b429;
+  background: rgba(240, 180, 41, 0.1);
+}
+
+.advent__guide-cell--overlap {
+  border: 1px solid #ff5c5c;
+  background: rgba(255, 92, 92, 0.22);
+}
+
+.advent__guide-label {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  z-index: 3;
+  padding: 2px 3px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #f0b429;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.advent__guide-summary {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 70;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+.advent__guide-summary[hidden] {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile — a separate mosaic, so doors switch to their -m placement
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .advent__grid,
+  .advent__guide {
+    grid-template-columns: repeat(var(--advent-cols-m), 1fr);
+    grid-template-rows: repeat(var(--advent-rows-m), 1fr);
+  }
+
+  .advent__grid {
+    aspect-ratio: var(--advent-cols-m) / var(--advent-rows-m);
+    width: 100%;
+  }
+
+  .advent__door {
+    grid-area: var(--area-m);
+  }
+
+  .advent__medallion {
+    width: 48px;
+    height: 48px;
+    font-size: 1.3rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion — decoration off, everything still legible
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .advent__snow {
+    display: none;
+  }
+
+  .advent__flake,
+  .advent__door,
+  .advent__door--shake,
+  .advent__door[data-state="today"],
+  .advent__card,
+  .advent__scrim,
+  .advent__code,
+  .advent__cta {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .advent__door:hover,
+  .advent__door:active,
+  .advent__cta:hover,
+  .advent__code:active {
+    transform: none;
+  }
+}

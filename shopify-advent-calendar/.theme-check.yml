@@ -1,0 +1,10 @@
+extends: theme-check:recommended
+ignore:
+  - node_modules/**
+  - scripts/**
+  - metaobjects/**
+  - docs/**
+MissingTemplate:
+  enabled: false
+UndefinedObject:
+  enabled: false

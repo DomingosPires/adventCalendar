@@ -1,0 +1,22 @@
+{
+  "type": "advent_calendar_day",
+  "name": "Advent Calendar Day",
+  "displayNameKey": "title",
+  "access": { "storefront": "PUBLIC_READ" },
+  "capabilities": { "publishable": { "enabled": true } },
+  "fieldDefinitions": [
+    { "key": "day", "name": "Day", "type": "number_integer", "required": true,
+      "validations": [ { "name": "min", "value": "1" }, { "name": "max", "value": "25" } ] },
+    { "key": "title", "name": "Title", "type": "single_line_text_field", "required": true },
+    { "key": "message", "name": "Message", "type": "rich_text_field", "required": true },
+    { "key": "code", "name": "Reward code", "type": "single_line_text_field" },
+    { "key": "motif", "name": "Motif", "type": "single_line_text_field",
+      "validations": [ { "name": "choices", "value": "[\"wreath\",\"candle\",\"star\",\"gift\",\"tree\",\"bell\",\"snowflake\",\"stocking\",\"bauble\",\"candycane\"]" } ] },
+    { "key": "image", "name": "Image", "type": "file_reference",
+      "validations": [ { "name": "file_type_options", "value": "[\"Image\"]" } ] },
+    { "key": "link_url", "name": "Link URL", "type": "url" },
+    { "key": "link_label", "name": "Link label", "type": "single_line_text_field" },
+    { "key": "grid_area", "name": "Grid area (desktop)", "type": "single_line_text_field" },
+    { "key": "grid_area_mobile", "name": "Grid area (mobile)", "type": "single_line_text_field" }
+  ]
+}

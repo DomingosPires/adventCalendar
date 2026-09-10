@@ -1,0 +1,11 @@
+{
+  "handle": "advent-day-02",
+  "fields": {
+    "day": "2",
+    "title": "Uma citação para hoje",
+    "message": "\"O maior presente que podes dar a alguém é o teu tempo.\" Oferece um bocadinho do teu hoje.",
+    "motif": "star",
+    "grid_area": "5 / 5 / span 1 / span 1",
+    "grid_area_mobile": "13 / 3 / span 1 / span 1"
+  }
+}

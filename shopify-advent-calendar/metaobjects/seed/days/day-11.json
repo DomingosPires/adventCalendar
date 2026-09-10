@@ -1,0 +1,11 @@
+{
+  "handle": "advent-day-11",
+  "fields": {
+    "day": "11",
+    "title": "Chamada surpresa",
+    "message": "Liga a um avô, a uma avó, ou a quem faça esse papel na tua vida.",
+    "motif": "bell",
+    "grid_area": "6 / 3 / span 1 / span 2",
+    "grid_area_mobile": "10 / 3 / span 1 / span 2"
+  }
+}
