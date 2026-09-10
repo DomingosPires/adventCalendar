@@ -19,9 +19,16 @@ export function yes(answer, def = true) {
 export function createPrompt() {
   const rl = createInterface({ input, output });
   return {
-    ask: (q, dflt) => rl.question(dflt ? `${q} [${dflt}]: ` : `${q}: `).then((a) => a.trim() || dflt || ''),
-    askYes: (q, def = true) => rl.question(`${q} [${def ? 'S/n' : 's/N'}] `).then((a) => yes(a, def)),
-    confirmWord: (q, word) => rl.question(`${q}\n  (escreve "${word}" para confirmar) `).then((a) => a.trim().toLowerCase() === String(word).toLowerCase()),
+    // With a default: shows it and Enter keeps it. Without: Enter = empty.
+    ask: (q, dflt) => rl.question(
+      dflt !== undefined && dflt !== '' ? `${q}  (Enter = ${dflt}): ` : `${q}: `,
+    ).then((a) => a.trim() || dflt || ''),
+    askYes: (q, def = true) => rl.question(
+      `${q}  [s/n, Enter = ${def ? 'Sim' : 'Não'}]: `,
+    ).then((a) => yes(a, def)),
+    confirmWord: (q, word) => rl.question(
+      `${q}\n  (escreve "${word}" para confirmar; Enter cancela) `,
+    ).then((a) => a.trim().toLowerCase() === String(word).toLowerCase()),
     close: () => rl.close(),
   };
 }

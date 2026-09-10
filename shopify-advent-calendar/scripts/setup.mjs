@@ -37,6 +37,7 @@ function banner() {
 
 async function main(p) {
   banner();
+  console.log('Carrega Enter numa pergunta para aceitar o valor sugerido (o que vem a seguir a "Enter =").\n');
   if (!(await p.askYes('Já tens a custom app criada e o .env preenchido. Continuar?', false))) {
     console.log('Ok — lê docs/custom-app.pdf e volta a correr  npm run setup');
     return;
@@ -73,7 +74,11 @@ async function main(p) {
       const raw = (await p.ask('Theme id para receber os ficheiros')).replace(/\D/g, '');
       const t = (themes || []).find((x) => String(x.id) === raw);
       if (!t) { sub('id não encontrado — tenta outra vez'); continue; }
-      if (t.role === 'main' && !(await p.askYes(`É o tema LIVE (${t.name}). Continuar mesmo assim?`, false))) continue;
+      if (t.role === 'main') {
+        sub(`"${t.name}" é o tema PUBLICADO — os ficheiros vão para o storefront de imediato, sem rede.`);
+        sub('O recomendado é usar um tema duplicado / unpublished.');
+        if (!(await p.askYes('Continuar mesmo no tema live?', false))) continue;
+      }
       themeId = t.id; themeName = t.name;
     }
     grid = parseGrid(await p.ask('Grelha  colunas/linhas/mobile-col/mobile-lin/gap', '7/8/4/14/8'));

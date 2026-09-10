@@ -86,6 +86,7 @@ async function main(p) {
 │  e pede confirmação escrita.                                        │
 └────────────────────────────────────────────────────────────────────┘
 `);
+  console.log('Carrega Enter numa pergunta para aceitar o valor sugerido ("Enter = …").\n');
   if (!(await p.askYes('Continuar?', false))) return;
 
   const { store, token } = await resolveCredentials(p);
