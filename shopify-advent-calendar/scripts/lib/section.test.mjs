@@ -33,18 +33,31 @@ test('computes current_day with the December guard and preview override', () => 
 });
 
 test('resolves the background from the metaobject background_type select', () => {
-  assert.match(src, /background_type/);
-  assert.match(src, /bg_type == 'gradient'/);
-  assert.match(src, /bg_type == 'image'/);
-  assert.match(src, /linear-gradient\(/);
-  assert.match(src, /gradient_color_start/);
-  assert.match(src, /gradient_color_end/);
-  assert.match(src, /gradient_angle/);
-  assert.match(src, /background_image\.value/);
-  assert.match(src, /background_image_dim/);
-  assert.match(src, /data-bg-type=/);
-  // the section override still forces a solid colour
-  assert.match(src, /section\.settings\.bg_override != blank/);
+  assert.match(src, /assign bg_type = calendar\.background_type\.value \| default: 'solid'/);
+  assert.match(src, /data-bg-type="\{\{ bg_type \}\}"/);
+  assert.match(src, /--advent-bg: \{\{ bg \}\}/);
+
+  // Branch order: section override → gradient → image → solid (else).
+  const iOverride = src.indexOf("section.settings.bg_override != blank");
+  const iGradient = src.indexOf("bg_type == 'gradient'");
+  const iImage = src.indexOf("bg_type == 'image'");
+  const iElse = src.indexOf("calendar.background_color.value | default: '#1c1613'");
+  assert.ok(iOverride > 0 && iGradient > iOverride && iImage > iGradient && iElse > iImage,
+    'background branches are not in the order override → gradient → image → solid');
+
+  // gradient branch: linear-gradient(<angle>deg, <start>, <end>) with defaults
+  assert.match(src, /assign g_start = calendar\.gradient_color_start\.value \| default: '#1c1613'/);
+  assert.match(src, /assign g_end = calendar\.gradient_color_end\.value \| default: '#2b1f1a'/);
+  assert.match(src, /assign g_angle = calendar\.gradient_angle\.value \| default: 160/);
+  assert.match(src, /'linear-gradient\(' \| append: g_angle \| append: 'deg, ' \| append: g_start \| append: ', ' \| append: g_end \| append: '\)'/);
+
+  // image branch: dim overlay (dim% → 0..1) over a cover-scaled CDN image
+  assert.match(src, /calendar\.background_image\.value != blank/);
+  assert.match(src, /assign dim = calendar\.background_image_dim\.value \| default: 40/);
+  assert.match(src, /assign dim_a = dim \| divided_by: 100\.0/);
+  assert.match(src, /calendar\.background_image\.value \| image_url: width: 2400/);
+  assert.match(src, /'linear-gradient\(rgba\(0,0,0,' \| append: dim_a/);
+  assert.match(src, /append: '\) center \/ cover no-repeat'/);
 });
 
 test('emits colour vars with the documented fallback chain and defaults', () => {
