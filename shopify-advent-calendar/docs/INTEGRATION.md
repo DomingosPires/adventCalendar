@@ -256,9 +256,50 @@ Notes:
   entries are upserted by handle (`advent-day-01` … `advent-day-25`, and
   `advent-calendar-default` for the parent).
 - You still need to do sections 4 (storefront access is set by the definition
-  JSON, but verify it) and 7 (add the section, pick the entry).
+  JSON, but verify it) and 7 (add the section, pick the entry) — unless you also
+  run the theme/page scripts in §6.1.
 - Admin API version: **2025-01** (adjust in `scripts/lib/admin.mjs` if your
   store needs a different version).
+
+### 6.1 Also create the theme files, a template and a page (optional)
+
+Two more scripts finish the install through the Admin **REST** API — the only
+thing left manual is publishing/previewing the theme. Add these scopes to the
+custom app from section 1: **`read_themes`**, **`write_themes`**, **`write_content`**.
+
+```sh
+# 1. list your themes, note the id of an UNPUBLISHED / duplicated theme
+#    (GET /admin/api/2025-01/themes.json — or just run push-theme with a bad
+#     id and it prints the list)
+npm run push-theme -- --theme <theme-id>
+npm run create-page
+```
+
+`push-theme`:
+
+- Uploads `sections/advent-calendar.liquid`, the five `snippets/advent-*`, and
+  the three `assets/advent-calendar.*` to that theme.
+- Generates `templates/page.advent-calendar.json` — one `advent-calendar`
+  section wired to the metaobject via the **`calendar_handle`** setting
+  (`advent-calendar-default`), with the default 7×8 / 4×14 grid settings.
+- **Merges** `sections.advent_calendar.no_entry` into the theme's existing
+  `locales/en.default.json` (GET → merge → PUT) — it never overwrites your
+  translations. It does **not** touch `en.default.schema.json`.
+- Refuses to run without `--theme <id>`, and prints a `WARNING` if the id is the
+  live (`main`) theme. Work on a duplicate, publish when it looks right.
+
+`create-page`:
+
+- Creates a page **"Advent Calendar"** at `/pages/advent-calendar` with
+  `template_suffix: advent-calendar` (so it renders `page.advent-calendar.json`).
+- Idempotent — if that handle already exists it only sets the `template_suffix`.
+- The page shows the calendar once a theme carrying the template is previewed or
+  published. Before then it falls back to the default `page` template (a blank
+  page, since the body is empty). To detach it, set the page's *Theme template*
+  back to "Default page" in **Online Store → Pages**.
+
+These use the same `SHOPIFY_STORE` / `SHOPIFY_ADMIN_TOKEN` as §6. Full flow:
+`create-defs → seed → push-theme --theme <id> → create-page`.
 
 ---
 

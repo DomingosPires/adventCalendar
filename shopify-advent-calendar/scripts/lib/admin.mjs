@@ -61,6 +61,32 @@ export function createClient({ store, token, version = DEFAULT_VERSION, fetchImp
   };
 }
 
+/** Minimal Admin REST client. `req(method, path[, body])` → parsed JSON.
+ *  `path` is everything after `/admin/api/<version>` (e.g. `/pages.json`).
+ *  Throws on a non-2xx response with the `errors`/`error` body if present. */
+export function restClient({ store, token, version = DEFAULT_VERSION, fetchImpl = fetch }) {
+  const base = `https://${store}/admin/api/${version}`;
+  return async function req(method, path, body) {
+    const res = await fetchImpl(base + path, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Access-Token': token,
+      },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    const text = await res.text();
+    const json = text ? JSON.parse(text) : null;
+    if (!res.ok) {
+      const detail = json && (json.errors || json.error)
+        ? JSON.stringify(json.errors || json.error)
+        : `HTTP ${res.status}`;
+      throw new Error(`${method} ${path} -> ${detail}`);
+    }
+    return json;
+  };
+}
+
 export function requireEnv() {
   // Load scripts/.env if present — real environment variables still win.
   const envPath = join(dirname(fileURLToPath(import.meta.url)), '..', '.env');

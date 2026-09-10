@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { adminEndpoint, parseGraphQLResponse, createClient, parseDotEnv } from './admin.mjs';
+import {
+  adminEndpoint, parseGraphQLResponse, createClient, parseDotEnv, restClient,
+} from './admin.mjs';
 
 test('adminEndpoint builds the versioned GraphQL URL', () => {
   assert.equal(
@@ -49,6 +51,38 @@ test('parseDotEnv reads KEY=VALUE, skips comments/blanks, strips quotes', () => 
     QUOTED: 'single',
     EMPTY: '',
   });
+});
+
+test('restClient issues the REST call and returns parsed JSON', async () => {
+  const calls = [];
+  const fakeFetch = async (url, opts) => {
+    calls.push({ url, opts });
+    return { ok: true, status: 201, text: async () => JSON.stringify({ page: { id: 9, handle: 'advent-calendar' } }) };
+  };
+  const req = restClient({ store: 'demo.myshopify.com', token: 't', fetchImpl: fakeFetch });
+  const data = await req('POST', '/pages.json', { page: { title: 'X' } });
+  assert.equal(data.page.id, 9);
+  assert.equal(calls[0].url, 'https://demo.myshopify.com/admin/api/2025-01/pages.json');
+  assert.equal(calls[0].opts.method, 'POST');
+  assert.equal(calls[0].opts.headers['X-Shopify-Access-Token'], 't');
+  assert.equal(JSON.parse(calls[0].opts.body).page.title, 'X');
+});
+
+test('restClient throws on a non-ok response with the error body', async () => {
+  const fakeFetch = async () => ({
+    ok: false, status: 422,
+    text: async () => JSON.stringify({ errors: { handle: ['has already been taken'] } }),
+  });
+  const req = restClient({ store: 's', token: 't', fetchImpl: fakeFetch });
+  await assert.rejects(() => req('POST', '/pages.json', {}), /has already been taken/);
+});
+
+test('restClient sends no body on GET', async () => {
+  let seen;
+  const fakeFetch = async (url, opts) => { seen = opts; return { ok: true, status: 200, text: async () => '{"themes":[]}' }; };
+  const req = restClient({ store: 's', token: 't', fetchImpl: fakeFetch });
+  await req('GET', '/themes.json');
+  assert.equal(seen.body, undefined);
 });
 
 test('createClient posts and unwraps data', async () => {

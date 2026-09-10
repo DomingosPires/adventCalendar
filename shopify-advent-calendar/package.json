@@ -5,6 +5,8 @@
     "test": "node --test",
     "check": "npx --yes @shopify/cli@latest theme check || true",
     "create-defs": "node scripts/create-definitions.mjs",
-    "seed": "node scripts/seed-entries.mjs"
+    "seed": "node scripts/seed-entries.mjs",
+    "push-theme": "node scripts/push-theme.mjs",
+    "create-page": "node scripts/create-page.mjs"
   }
 }
