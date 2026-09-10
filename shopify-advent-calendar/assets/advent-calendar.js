@@ -183,6 +183,12 @@
       shell.card.removeAttribute('aria-labelledby');
     }
 
+    /* Reveal: warm halo ramp + the cover leaf lifting away. Toggle the class
+       off/on around a reflow so both animations restart on every open. */
+    shell.card.classList.remove('advent__card--revealing');
+    void shell.card.offsetWidth;
+    shell.card.classList.add('advent__card--revealing');
+
     shell.portal.hidden = false;
     document.body.style.overflow = 'hidden';
 
@@ -274,6 +280,7 @@
     if (!st || !st.open) return;
     var shell = st.shell;
     st.open = false;
+    if (shell && shell.card) shell.card.classList.remove('advent__card--revealing');
 
     /* Unwire everything this open added. */
     document.removeEventListener('keydown', st.onEsc);

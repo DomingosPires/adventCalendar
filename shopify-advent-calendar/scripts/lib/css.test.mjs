@@ -24,6 +24,18 @@ test('maps motif vars and honours reduced motion', () => {
   assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
 });
 
+test('overlay open has a warm halo ramp and a cover leaf that lifts away', () => {
+  assert.match(css, /@keyframes advent-halo-in/);
+  assert.match(css, /@keyframes advent-leaf-lift/);
+  assert.match(css, /\.advent__card-leaf\s*{/);
+  assert.match(css, /\.advent__card--revealing\s+\.advent__card-leaf/);
+  // reduced motion must silence the reveal animations
+  assert.match(
+    css,
+    /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*\.advent__card-leaf[\s\S]*animation:\s*none/,
+  );
+});
+
 test('styles the four door states and the guide overlay', () => {
   for (const s of ['locked', 'today', 'past', 'opened']) {
     assert.match(css, new RegExp(`\\[data-state="${s}"\\]`), `no rule for ${s}`);

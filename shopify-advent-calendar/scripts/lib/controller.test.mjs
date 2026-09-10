@@ -34,6 +34,12 @@ test('overlay: FLIP, focus trap, escape, scroll lock', () => {
   assert.match(js, /key === 'Tab'|key === "Tab"/);
 });
 
+test('overlay restarts the reveal animation on every open', () => {
+  assert.match(js, /classList\.remove\('advent__card--revealing'\)/);
+  assert.match(js, /classList\.add\('advent__card--revealing'\)/);
+  assert.match(js, /offsetWidth/);
+});
+
 test('storage key is namespaced by section id', () => {
   assert.match(js, /advent-calendar:opened:/);
 });

@@ -402,6 +402,74 @@
   transition: box-shadow 0.3s ease;
 }
 
+/* Warm halo ramps in around the whole card once it lands (mirrors the
+   React DoorFocus haloIn). Driven by a class so it restarts on every open. */
+.advent__card--revealing {
+  animation: advent-halo-in 1s ease-out 0.55s both;
+}
+
+@keyframes advent-halo-in {
+  to {
+    box-shadow: var(--advent-shadow-4), 0 0 120px 20px var(--advent-halo);
+  }
+}
+
+/* Cover panel over the content; lifts away (opacity 1 -> 0) to reveal it.
+   Default state is hidden so if the animation never runs (reduced motion)
+   the content stays visible. */
+.advent__card-leaf {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: var(--advent-radius-lg);
+  background: linear-gradient(160deg, var(--advent-door), var(--advent-bg));
+  box-shadow: var(--advent-bevel), inset 0 0 40px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.advent__card-leaf .advent__motif {
+  position: absolute;
+  inset: 30%;
+  width: 40%;
+  height: 40%;
+  opacity: 0.85;
+}
+
+.advent__card--revealing .advent__card-leaf {
+  animation: advent-leaf-lift 0.85s ease-in-out 0.2s both;
+}
+
+@keyframes advent-leaf-lift {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Diagonal glint that sweeps across the leaf as it lifts. */
+.advent__card-shine {
+  position: absolute;
+  inset: 0;
+  transform: translateX(-130%);
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.16) 47%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.16) 53%,
+    transparent 62%
+  );
+}
+
+.advent__card--revealing .advent__card-shine {
+  animation: advent-leaf-shine 0.7s ease-in-out 0.15s both;
+}
+
+@keyframes advent-leaf-shine {
+  from { transform: translateX(-130%); }
+  to { transform: translateX(130%); }
+}
+
 /* The content, not the card, scrolls — that keeps the watermark parked. */
 .advent__card-inner {
   position: relative;
@@ -653,6 +721,9 @@
   .advent__door--shake,
   .advent__door[data-state="today"],
   .advent__card,
+  .advent__card--revealing,
+  .advent__card-leaf,
+  .advent__card-shine,
   .advent__scrim,
   .advent__code,
   .advent__cta {

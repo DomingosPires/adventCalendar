@@ -10,7 +10,7 @@
     {%- if day_entry.image.value != blank -%}
       {{ day_entry.image.value | image_url: width: 720 | image_tag: loading: 'lazy', class: 'advent__card-image', alt: day_entry.title.value }}
     {%- endif -%}
-    <div class="advent__card-message">{{ day_entry.message.value }}</div>
+    <div class="advent__card-message">{{ day_entry.message }}</div>
     {%- if day_entry.code.value != blank -%}
       <button type="button" class="advent__code" data-code="{{ day_entry.code.value | escape }}">
         <span class="advent__code-text">{{ day_entry.code.value }}</span>
@@ -25,5 +25,14 @@
   </div>
   <div class="advent__card-watermark" aria-hidden="true">
     {%- render 'advent-motif', name: day_entry.motif.value, class: 'advent__motif' -%}
+  </div>
+  {%- comment -%}
+    Cover panel: sits over the content and fades away on open to reveal it.
+    The diagonal glint sweeps across as it lifts. Both are driven by the
+    .advent__card--revealing class that advent-calendar.js toggles.
+  {%- endcomment -%}
+  <div class="advent__card-leaf" aria-hidden="true">
+    {%- render 'advent-motif', name: day_entry.motif.value, class: 'advent__motif' -%}
+    <div class="advent__card-shine"></div>
   </div>
 </template>
