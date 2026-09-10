@@ -87,7 +87,10 @@ Both files can carry the same key.</div>
   <tr><th>Key</th><th>Type</th><th>Required</th><th>Notes / default</th></tr>
   <tr><td><code>heading</code></td><td>Single line text</td><td>Yes</td><td>—</td></tr>
   <tr><td><code>subheading</code></td><td>Single line text</td><td>No</td><td>—</td></tr>
-  <tr><td><code>background_color</code></td><td>Color</td><td>No</td><td><code>#1c1613</code></td></tr>
+  <tr><td><code>background_type</code></td><td>Single line text</td><td>No</td><td>preset choices <code>solid</code> / <code>gradient</code> / <code>image</code>; empty = <code>solid</code></td></tr>
+  <tr><td><code>background_color</code></td><td>Color</td><td>No</td><td>type <code>solid</code>. Default <code>#1c1613</code></td></tr>
+  <tr><td><code>gradient_color_start</code>, <code>gradient_color_end</code>, <code>gradient_angle</code></td><td>Color, Color, Integer</td><td>No</td><td>type <code>gradient</code> (angle 0–360, default 160)</td></tr>
+  <tr><td><code>background_image</code>, <code>background_image_dim</code></td><td>File (image), Integer</td><td>No</td><td>type <code>image</code>; dim&nbsp;% is a dark overlay for legibility (0–100, default 40)</td></tr>
   <tr><td><code>text_color</code></td><td>Color</td><td>No</td><td><code>#f6ede0</code></td></tr>
   <tr><td><code>door_color</code></td><td>Color</td><td>No</td><td><code>#2a3d35</code></td></tr>
   <tr><td><code>door_text_color</code></td><td>Color</td><td>No</td><td><code>#cfe3d4</code></td></tr>
@@ -123,6 +126,8 @@ Both files can carry the same key.</div>
   <li>Open a door → the overlay animates from it; <kbd>Esc</kbd> / clicking the backdrop closes it; opened doors are remembered per browser.</li>
   <li><strong>Layout tweaks:</strong> to move or resize a door, set its <code>grid_area</code> to <code>"&lt;row&gt; / &lt;col&gt; / span &lt;height&gt; / span &lt;width&gt;"</code> (1-based; e.g. <code>1 / 5 / span 2 / span 1</code>). Turn on <strong>Show layout guides</strong> in the section settings to see holes / overlaps flagged. Grid size is fixed at 7×8 desktop / 4×14 mobile in the settings; if you change it, re-balance every door. Full table + rules: <code>INTEGRATION.md</code> §8.</li>
   <li>Colours: the section's <em>Style overrides</em> beat the metaobject colour fields, which beat the built-in defaults. Keep text-on-background and door-text-on-door at WCAG AA.</li>
+  <li>Background: set <code>background_type</code> on the calendar entry to <code>solid</code>, <code>gradient</code>, or <code>image</code>; only that type's fields apply. For an image, raise <code>background_image_dim</code> until text is legible. Full detail: <code>INTEGRATION.md</code> §9.1.</li>
+  <li>Custom door icons: pick another of the ten <code>motif</code> values, or add your own SVG / put an image on the door face — <code>INTEGRATION.md</code> §10.</li>
   <li>When it looks right: <strong>Themes → ⋯ → Publish</strong> the working copy.</li>
 </ul>
 
@@ -132,7 +137,7 @@ Both files can carry the same key.</div>
   <tr><td>Section shows “Select an Advent calendar entry…”</td><td>Step 6.3 — the <strong>Advent calendar</strong> setting (or handle fallback) is not pointing at the parent entry.</td></tr>
   <tr><td>Section renders nothing / blank</td><td>Step 4 — storefront access not enabled on one or both definitions. Also confirm the parent entry and its 25 days are <strong>Active</strong>, not draft.</td></tr>
   <tr><td>All doors locked in December</td><td>Expected before day 1, or if <code>start_date</code> is a future date. Use <strong>Preview day</strong> to check.</td></tr>
-  <tr><td>Wrong icon on a door</td><td><code>motif</code> value must be one of the ten preset choices (step 2), lowercase.</td></tr>
+  <tr><td>Wrong icon on a door</td><td><code>motif</code> value must be one of the ten preset choices (step 2), lowercase. To add your own icon: <code>INTEGRATION.md</code> §10.</td></tr>
   <tr><td>Doors overlap / gaps in the grid</td><td>A custom <code>grid_area</code> broke the tiling. Turn on <strong>Show layout guides</strong>; clear the field to fall back to the default.</td></tr>
   <tr><td>Theme editor didn't update after editing a metaobject</td><td>Metaobjects are a separate Admin screen — go back to Customize and refresh the preview.</td></tr>
 </table>

@@ -1,3 +1,6 @@
+# Claude Code session state, settings, worktrees (contains node_modules)
+/.claude/
+
 # Superpowers process artifacts (brainstorm specs + implementation plans) — kept locally, not in history
 /docs/superpowers/
 

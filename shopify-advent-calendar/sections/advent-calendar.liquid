@@ -6,7 +6,22 @@
 
   assign max_day = 25
 
-  assign bg = section.settings.bg_override | default: calendar.background_color.value | default: '#1c1613'
+  assign bg_type = calendar.background_type.value | default: 'solid'
+  if section.settings.bg_override != blank
+    assign bg = section.settings.bg_override
+  elsif bg_type == 'gradient'
+    assign g_start = calendar.gradient_color_start.value | default: '#1c1613'
+    assign g_end = calendar.gradient_color_end.value | default: '#2b1f1a'
+    assign g_angle = calendar.gradient_angle.value | default: 160
+    assign bg = 'linear-gradient(' | append: g_angle | append: 'deg, ' | append: g_start | append: ', ' | append: g_end | append: ')'
+  elsif bg_type == 'image' and calendar.background_image.value != blank
+    assign dim = calendar.background_image_dim.value | default: 40
+    assign dim_a = dim | divided_by: 100.0
+    assign bg_img = calendar.background_image.value | image_url: width: 2400
+    assign bg = 'linear-gradient(rgba(0,0,0,' | append: dim_a | append: '), rgba(0,0,0,' | append: dim_a | append: ')), url(' | append: bg_img | append: ') center / cover no-repeat'
+  else
+    assign bg = calendar.background_color.value | default: '#1c1613'
+  endif
   assign fg = section.settings.text_override | default: calendar.text_color.value | default: '#f6ede0'
   assign door = section.settings.door_override | default: calendar.door_color.value | default: '#2a3d35'
   assign door_fg = section.settings.door_text_override | default: calendar.door_text_color.value | default: '#cfe3d4'
@@ -53,6 +68,7 @@
   data-section-id="{{ section.id }}"
   data-current-day="{{ current_day }}"
   data-max-day="{{ max_day }}"
+  data-bg-type="{{ bg_type }}"
   data-guides="{% if guides %}true{% else %}false{% endif %}"
   style="
     --advent-bg: {{ bg }};

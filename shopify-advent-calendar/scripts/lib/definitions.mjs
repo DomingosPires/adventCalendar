@@ -7,7 +7,9 @@ export const DAY_FIELD_KEYS = [
 ];
 
 export const CALENDAR_FIELD_KEYS = [
-  'heading', 'subheading', 'background_color', 'text_color', 'door_color',
+  'heading', 'subheading', 'background_type', 'background_color',
+  'gradient_color_start', 'gradient_color_end', 'gradient_angle',
+  'background_image', 'background_image_dim', 'text_color', 'door_color',
   'door_text_color', 'accent_color', 'show_snow', 'start_date', 'days',
 ];
 

@@ -9,7 +9,7 @@ Two paths are described:
 - **By hand** in the Admin — sections 2–5.
 - **By script** — section 6 (`npm run create-defs && npm run seed`).
 
-Either way, then do sections 7–9 and run the QA checklist (section 10).
+Either way, then do sections 7–10 and run the QA checklist (section 11).
 
 ---
 
@@ -106,7 +106,13 @@ values inside `grid_area` (one source of truth).
 |---|---|---|---|---|
 | `heading` | Heading | Single line text | **Yes** | e.g. "Calendário do Advento" |
 | `subheading` | Subheading | Single line text | No | e.g. "Abre uma porta por dia até ao Natal" |
-| `background_color` | Background color | Color | No | Section background. Default if empty: `#1c1613` |
+| `background_type` | Background type | Single line text | No | Preset choices: `solid` / `gradient` / `image`. Empty → `solid`. Picks which of the fields below apply — see §9.1 |
+| `background_color` | Background color (solid) | Color | No | Used when type = `solid`. Default: `#1c1613` |
+| `gradient_color_start` | Gradient start (gradient) | Color | No | Used when type = `gradient`. Default: `#1c1613` |
+| `gradient_color_end` | Gradient end (gradient) | Color | No | Used when type = `gradient`. Default: `#2b1f1a` |
+| `gradient_angle` | Gradient angle deg (gradient) | Integer | No | 0–360. Used when type = `gradient`. Default: `160` |
+| `background_image` | Background image (image) | File (images only) | No | Used when type = `image` |
+| `background_image_dim` | Background image dim % (image) | Integer | No | 0–100. Dark overlay over the image for text legibility. Default: `40` |
 | `text_color` | Text color | Color | No | General text. Default: `#f6ede0` |
 | `door_color` | Door color | Color | No | Door face. Default: `#2a3d35` |
 | `door_text_color` | Door text color | Color | No | Number / icon. Default: `#cfe3d4` |
@@ -114,6 +120,11 @@ values inside `grid_area` (one source of truth).
 | `show_snow` | Show snow | True / false (boolean) | No | Default: `true` |
 | `start_date` | Start date | Date | No | Door `N` opens on `start_date + (N-1)` days. Empty → day `N` of December in the current year. |
 | `days` | Days | Metaobject list | **Yes** | Type: **Metaobject** (list), pointing at **Advent Calendar Day** |
+
+For **`background_type`**: after picking Single line text, enable **"Limit to
+preset choices"** and add exactly `solid`, `gradient`, `image`. How each is
+used is covered in §9.1 — you can safely leave the gradient / image fields
+filled in even when they are not the active type.
 
 For the **`days`** field:
 
@@ -384,23 +395,23 @@ Changing the grid dimensions requires re-balancing the layout — see section 8.
 
 ## 9. Colours
 
-Five colour roles: **background, text, door, door text, accent**. Each is
+Four **text / surface** colour roles — **text, door, door text, accent** — plus
+the **background** (which has its own type selector, §9.1). Each of the four is
 resolved with this precedence:
 
 1. **Section style override** (the *Style overrides (optional)* settings on the
    section) — if set, wins.
 2. else the **metaobject field** on the `advent_calendar` entry
-   (`background_color`, `text_color`, `door_color`, `door_text_color`,
-   `accent_color`).
+   (`text_color`, `door_color`, `door_text_color`, `accent_color`).
 3. else a **hard-coded default**:
 
    | Role | Default |
    |---|---|
-   | Background | `#1c1613` |
    | Text | `#f6ede0` |
    | Door | `#2a3d35` |
    | Door text | `#cfe3d4` |
    | Accent | `#c9a24b` |
+   | Background (solid) | `#1c1613` |
 
 The effective values are injected as CSS custom properties on the section
 wrapper.
@@ -411,9 +422,89 @@ if you change colours, re-check with a contrast checker. The accent colour is
 used for glows and highlights — keep it distinguishable from both the door and
 the background.
 
+### 9.1 Background type
+
+The `advent_calendar` entry has a **`background_type`** select — `solid`,
+`gradient`, or `image` (empty = `solid`). Only the fields for the chosen type
+are read; the others are ignored, so you can keep all three configured and just
+flip the selector.
+
+| `background_type` | Fields used | Result |
+|---|---|---|
+| `solid` | `background_color` | flat colour (default `#1c1613`) |
+| `gradient` | `gradient_color_start`, `gradient_color_end`, `gradient_angle` | `linear-gradient(<angle>deg, <start>, <end>)` (defaults `#1c1613` → `#2b1f1a` at `160deg`) |
+| `image` | `background_image`, `background_image_dim` | the image, `cover`-scaled and centred, under a black overlay at `background_image_dim` % opacity (default `40`) so text stays readable |
+
+Notes:
+
+- The section's **Background** style override (under *Style overrides*) still
+  wins over everything and always produces a **solid** colour — leave it empty
+  to use `background_type`.
+- For `gradient` / `image`, re-check text contrast (§9). For an image, raise
+  `background_image_dim` until the heading and door text are comfortably legible;
+  a busy photo usually needs 50–70.
+- The image is served from Shopify's CDN at up to 2400px wide.
+
 ---
 
-## 10. QA checklist (run against `shopify theme dev`)
+## 10. Custom icons
+
+Each door shows one **motif** — a line-art SVG chosen by the day entry's
+`motif` field. Three ways to change what appears:
+
+### 10.1 Pick a different built-in motif — no code
+
+Set the day entry's `motif` field to one of the ten presets: `wreath`,
+`candle`, `star`, `gift`, `tree`, `bell`, `snowflake`, `stocking`, `bauble`,
+`candycane`. That's the whole job. Empty or unrecognised → `wreath`.
+
+### 10.2 Add your own motif to the set — edit one snippet + the definition
+
+1. **`snippets/advent-motif.liquid`** — add a branch to the `case`, with your
+   own inline SVG (viewBox `0 0 100 100`). Paint with the three CSS variables so
+   it inherits the door colours:
+
+   ```liquid
+   {%- when 'holly' -%}
+     <path d="…" fill="var(--motif-ink)"/>
+     <circle cx="…" cy="…" r="…" fill="var(--motif-accent)"/>
+     <path d="…" fill="var(--motif-hi)"/>
+   ```
+
+   Also add `holly` to the `allowed` split-list at the top of that snippet —
+   otherwise an unknown key falls back to `wreath`.
+2. **Metaobject definition** `advent_calendar_day` → `motif` field → add `holly`
+   to the preset choices.
+3. Re-upload the snippet to the theme.
+
+`--motif-ink` follows `door_text_color`, `--motif-accent` follows
+`accent_color`, `--motif-hi` is a fixed white highlight.
+
+### 10.3 Use an uploaded image as the door icon — small code edit
+
+Out of the box the day entry's `image` field is shown only in the **overlay**
+(the pop-up when the door opens), not on the door face. To put an uploaded
+image on the door itself, edit **`snippets/advent-door.liquid`** — replace the
+contents of the `.advent__door-motif` span:
+
+```liquid
+<span class="advent__door-motif">
+  {%- if day_entry.image.value != blank -%}
+    {{ day_entry.image.value | image_url: width: 200 | image_tag: class: 'advent__motif', alt: '', loading: 'lazy' }}
+  {%- else -%}
+    {%- render 'advent-motif', name: motif, class: 'advent__motif' -%}
+  {%- endif -%}
+</span>
+```
+
+and add a sizing rule to **`assets/advent-calendar.css`**, e.g.
+`.advent__door-motif img { width: 60%; height: auto; }`. Then re-upload both
+files. Use simple, high-contrast shapes — the motif area is small and sits over
+the door colour.
+
+---
+
+## 11. QA checklist (run against `shopify theme dev`)
 - [ ] Preview day 1..25 walks locked → today → past; 0 restores real date.
 - [ ] `?day=13` outside December unlocks doors 1–13 client-side.
 - [ ] Opening a door: overlay animates from the door; focus lands on Close;
@@ -435,7 +526,7 @@ the code contract.
 
 ---
 
-## 11. Known limitations
+## 12. Known limitations
 
 - **`metaobject` section setting availability.** The `type: "metaobject"` setting
   ("Advent calendar" picker) is GA but depends on the theme/Shopify version. If

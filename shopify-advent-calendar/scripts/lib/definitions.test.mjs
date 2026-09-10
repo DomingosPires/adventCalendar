@@ -24,3 +24,15 @@ test('calendar definition references the day definition', () => {
   assert.equal(days.type, 'list.metaobject_reference');
   assert.equal(days.validations[0].value, '@ref:advent_calendar_day');
 });
+
+test('calendar background_type is a three-choice select', () => {
+  const { calendar } = loadDefinitions(dir);
+  const bgType = calendar.fieldDefinitions.find((f) => f.key === 'background_type');
+  assert.equal(bgType.type, 'single_line_text_field');
+  assert.equal(bgType.validations[0].name, 'choices');
+  assert.deepEqual(JSON.parse(bgType.validations[0].value), ['solid', 'gradient', 'image']);
+  for (const k of ['gradient_color_start', 'gradient_color_end', 'gradient_angle',
+    'background_image', 'background_image_dim']) {
+    assert.ok(calendar.fieldDefinitions.some((f) => f.key === k), `missing ${k}`);
+  }
+});

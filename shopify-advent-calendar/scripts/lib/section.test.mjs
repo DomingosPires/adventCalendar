@@ -32,6 +32,21 @@ test('computes current_day with the December guard and preview override', () => 
   assert.match(src, /assign current_day/);
 });
 
+test('resolves the background from the metaobject background_type select', () => {
+  assert.match(src, /background_type/);
+  assert.match(src, /bg_type == 'gradient'/);
+  assert.match(src, /bg_type == 'image'/);
+  assert.match(src, /linear-gradient\(/);
+  assert.match(src, /gradient_color_start/);
+  assert.match(src, /gradient_color_end/);
+  assert.match(src, /gradient_angle/);
+  assert.match(src, /background_image\.value/);
+  assert.match(src, /background_image_dim/);
+  assert.match(src, /data-bg-type=/);
+  // the section override still forces a solid colour
+  assert.match(src, /section\.settings\.bg_override != blank/);
+});
+
 test('emits colour vars with the documented fallback chain and defaults', () => {
   for (const [setting, dflt] of [
     ['bg_override', '#1c1613'], ['text_override', '#f6ede0'], ['door_override', '#2a3d35'],

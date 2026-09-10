@@ -50,7 +50,12 @@
   position: relative;
   overflow: hidden;
   padding: clamp(24px, 5vw, 56px) clamp(16px, 4vw, 40px);
+  /* --advent-bg is composed in advent-calendar.liquid: a colour, a
+     linear-gradient(), or a dim-layer + url() for an image background. */
   background: var(--advent-bg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
   color: var(--advent-text);
 }
 
