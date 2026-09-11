@@ -13,9 +13,9 @@ test('is a per-day template keyed by day number', () => {
 
 test('outputs title, rich-text message, and conditional image / code / cta', () => {
   assert.match(src, /day_entry\.title\.value/);
-  // rich_text_field: render the metafield drop as HTML, never the raw .value
-  assert.match(src, /\{\{ day_entry\.message \}\}/);
-  assert.doesNotMatch(src, /day_entry\.message\.value/);
+  // metaobject fields are never auto-converted to HTML (unlike resource
+  // metafields) — hand the parsed AST (.value) to the manual renderer.
+  assert.match(src, /render 'advent-richtext', node: day_entry\.message\.value/);
   assert.match(src, /day_entry\.image/);
   assert.match(src, /day_entry\.code\.value != blank/);
   assert.match(src, /day_entry\.link_url\.value != blank/);
@@ -25,4 +25,11 @@ test('outputs title, rich-text message, and conditional image / code / cta', () 
 test('carries the cover leaf that lifts away on open', () => {
   assert.match(src, /class="advent__card-leaf"/);
   assert.match(src, /class="advent__card-shine"/);
+});
+
+test('code button is icon-only, with an accessible label instead of text', () => {
+  assert.match(src, /aria-label="Copiar código"/);
+  assert.doesNotMatch(src, />\s*copiar\s*</i);
+  assert.match(src, /advent__code-icon--copy/);
+  assert.match(src, /advent__code-icon--check/);
 });

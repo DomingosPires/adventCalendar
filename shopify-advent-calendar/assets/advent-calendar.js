@@ -266,10 +266,13 @@
     if (!p || typeof p.then !== 'function') return;
     p.then(
       function () {
-        if (!hint) return;
-        hint.textContent = 'copiado';
+        if (hint) hint.classList.add('advent__code-hint--copied');
+        btn.setAttribute('aria-label', 'Código copiado');
         clearTimeout(btn._adventCopyTimer);
-        btn._adventCopyTimer = setTimeout(function () { hint.textContent = 'copiar'; }, 2000);
+        btn._adventCopyTimer = setTimeout(function () {
+          if (hint) hint.classList.remove('advent__code-hint--copied');
+          btn.setAttribute('aria-label', 'Copiar código');
+        }, 2000);
       },
       function () { /* denied or unavailable — leave the hint alone */ }
     );

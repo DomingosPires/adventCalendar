@@ -539,10 +539,15 @@
   margin-bottom: 0;
 }
 
-.advent__card-message ul {
+.advent__card-message ul,
+.advent__card-message ol {
   margin: 0.5em 0;
   padding-left: 1.25em;
   text-align: left;
+}
+
+.advent__rt-heading {
+  font-weight: 700;
 }
 
 .advent__card-message a {
@@ -584,10 +589,29 @@
 }
 
 .advent__code-hint {
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  opacity: 0.65;
+  display: inline-flex;
+  opacity: 0.7;
+}
+
+.advent__code-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.advent__code-icon--check {
+  display: none;
+}
+
+/* advent-calendar.js toggles this on the hint after a successful copy. */
+.advent__code-hint--copied {
+  opacity: 1;
+  color: var(--advent-accent);
+}
+.advent__code-hint--copied .advent__code-icon--copy {
+  display: none;
+}
+.advent__code-hint--copied .advent__code-icon--check {
+  display: block;
 }
 
 .advent__cta {

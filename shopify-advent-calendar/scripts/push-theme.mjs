@@ -14,6 +14,8 @@ const FILES = [
   'sections/advent-calendar.liquid',
   'snippets/advent-door.liquid',
   'snippets/advent-overlay.liquid',
+  'snippets/advent-richtext.liquid',
+  'snippets/advent-richtext-inline.liquid',
   'snippets/advent-grid-defaults.liquid',
   'snippets/advent-motif.liquid',
   'snippets/advent-snow.liquid',

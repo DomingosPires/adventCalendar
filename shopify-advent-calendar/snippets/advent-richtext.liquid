@@ -1,0 +1,27 @@
+{%- comment -%}
+  Renders a metaobject rich_text_field's *parsed* value as semantic HTML.
+
+  Unlike a resource metafield (`product.metafields.custom.x`), a metaobject
+  field is never auto-converted to HTML by Liquid — printing it directly or
+  via `.value` both just dump the raw stored value. `.value` does give back
+  a real, Liquid-navigable AST (the {"type":"root","children":[...]} shape
+  documented for Shopify rich text), so this walks it by hand.
+
+  Param: node — the field's `.value` (the root node)
+{%- endcomment -%}
+{%- for block in node.children -%}
+  {%- case block.type -%}
+    {%- when 'paragraph' -%}
+      <p>{%- for child in block.children -%}{%- render 'advent-richtext-inline', node: child -%}{%- endfor -%}</p>
+    {%- when 'heading' -%}
+      <p class="advent__rt-heading">{%- for child in block.children -%}{%- render 'advent-richtext-inline', node: child -%}{%- endfor -%}</p>
+    {%- when 'list' -%}
+      {%- assign advent_rt_tag = 'ul' -%}
+      {%- if block.listType == 'ordered' -%}{%- assign advent_rt_tag = 'ol' -%}{%- endif -%}
+      <{{ advent_rt_tag }}>
+        {%- for item in block.children -%}
+          <li>{%- for child in item.children -%}{%- render 'advent-richtext-inline', node: child -%}{%- endfor -%}</li>
+        {%- endfor -%}
+      </{{ advent_rt_tag }}>
+  {%- endcase -%}
+{%- endfor -%}

@@ -40,6 +40,13 @@ test('overlay restarts the reveal animation on every open', () => {
   assert.match(js, /offsetWidth/);
 });
 
+test('copy feedback toggles a class + aria-label, not textContent', () => {
+  assert.match(js, /classList\.add\('advent__code-hint--copied'\)/);
+  assert.match(js, /classList\.remove\('advent__code-hint--copied'\)/);
+  assert.match(js, /setAttribute\('aria-label', 'Código copiado'\)/);
+  assert.match(js, /setAttribute\('aria-label', 'Copiar código'\)/);
+});
+
 test('storage key is namespaced by section id', () => {
   assert.match(js, /advent-calendar:opened:/);
 });

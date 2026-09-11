@@ -1,0 +1,16 @@
+{%- comment -%}
+  One inline rich-text node: plain/bold/italic text, or a link wrapping
+  further inline nodes. Recurses through 'advent-richtext-inline' itself for
+  link children (Liquid snippets can't self-reference by name, but a render
+  call works fine here since link nesting is shallow).
+  Param: node
+{%- endcomment -%}
+{%- case node.type -%}
+  {%- when 'text' -%}
+    {%- assign advent_rt_text = node.value | escape -%}
+    {%- if node.bold -%}{%- assign advent_rt_text = '<strong>' | append: advent_rt_text | append: '</strong>' -%}{%- endif -%}
+    {%- if node.italic -%}{%- assign advent_rt_text = '<em>' | append: advent_rt_text | append: '</em>' -%}{%- endif -%}
+    {{ advent_rt_text }}
+  {%- when 'link' -%}
+    <a href="{{ node.url | escape }}"{% if node.target == '_blank' %} target="_blank" rel="noopener"{% endif %}>{%- for child in node.children -%}{%- render 'advent-richtext-inline', node: child -%}{%- endfor -%}</a>
+{%- endcase -%}
