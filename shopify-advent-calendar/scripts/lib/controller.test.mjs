@@ -47,6 +47,14 @@ test('copy feedback toggles a class + aria-label, not textContent', () => {
   assert.match(js, /setAttribute\('aria-label', 'Copiar código'\)/);
 });
 
+test('close button stacks above the card content it is appended before', () => {
+  // .advent__card-inner (z-index 1) and .advent__card-leaf (z-index 2) are
+  // both appended after the close button on every open; a tied z-index
+  // would let them paint over it and swallow the click.
+  assert.match(js, /className = 'advent__close'/);
+  assert.match(js, /z-index:3/);
+});
+
 test('storage key is namespaced by section id', () => {
   assert.match(js, /advent-calendar:opened:/);
 });

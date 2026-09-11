@@ -112,8 +112,11 @@
       close.className = 'advent__close';
       close.setAttribute('aria-label', 'Fechar');
       close.textContent = '✕';
-      /* The stylesheet has no .advent__close rule — keep it usable unstyled. */
-      close.style.cssText = 'position:absolute;top:8px;right:8px;z-index:1;' +
+      /* The stylesheet has no .advent__close rule — keep it usable unstyled.
+         z-index must clear .advent__card-inner (1) and .advent__card-leaf (2)
+         — both are appended after this button on every open, so on a tied
+         z-index they'd paint on top and swallow the click. */
+      close.style.cssText = 'position:absolute;top:8px;right:8px;z-index:3;' +
         'background:transparent;border:0;font-size:1.5rem;line-height:1;' +
         'cursor:pointer;color:inherit;';
 
